@@ -76,12 +76,12 @@ export default function Gauge({ value, domainMin, domainMax, zones, size = 280 }
           y1={cy}
           x2={cx}
           y2={cy - r + strokeWidth * 1.4}
-          stroke="#14281D"
+          stroke="var(--forest)"
           strokeWidth={4}
           strokeLinecap="round"
           transform={`rotate(-90 ${cx} ${cy})`}
         />
-        <circle cx={cx} cy={cy} r={9} fill="#14281D" />
+        <circle cx={cx} cy={cy} r={9} fill="var(--forest)" />
         <circle cx={cx} cy={cy} r={4} fill="#C5F547" />
       </svg>
     </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import ThemeToggle from '../shared/ThemeToggle'
 import './NavBar.css'
 
 export default function NavBar() {
@@ -45,6 +46,8 @@ export default function NavBar() {
         <a href="#tools" className="btn btn-primary nav__cta" onClick={goToTools}>
           Get your numbers
         </a>
+
+        <ThemeToggle className="nav__theme-toggle" />
 
         <button
           className="nav__burger"

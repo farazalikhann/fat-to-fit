@@ -46,3 +46,23 @@ export const IconBody = (p) => (
     <path d="M8 21l1.5-7L8 11V8a4 4 0 0 1 8 0v3l-1.5 3L16 21" />
   </svg>
 )
+
+export const IconSun = (p) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" {...common} {...p}>
+    <circle cx="12" cy="12" r="4.2" />
+    <path d="M12 2.5v2.3M12 19.2v2.3M4.5 12H2.2M21.8 12h-2.3M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" />
+  </svg>
+)
+
+export const IconMoon = (p) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" {...common} {...p}>
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" />
+  </svg>
+)
+
+export const IconDownload = (p) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" {...common} {...p}>
+    <path d="M12 3v12M12 15l-4.5-4.5M12 15l4.5-4.5" />
+    <path d="M4.5 17v2A2.5 2.5 0 0 0 7 21.5h10a2.5 2.5 0 0 0 2.5-2.5v-2" />
+  </svg>
+)

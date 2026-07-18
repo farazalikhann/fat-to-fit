@@ -1,0 +1,25 @@
+.pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--forest);
+  border-radius: 100px;
+  padding: 9px 18px 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+  flex-shrink: 0;
+}
+
+.pdf-btn:hover {
+  border-color: var(--sage);
+  background: var(--card);
+}
+
+.pdf-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}

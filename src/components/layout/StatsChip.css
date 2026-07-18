@@ -33,7 +33,7 @@
 }
 
 .stats-chip__edit {
-  background: var(--forest);
+  background: var(--surface-deep);
   color: #fff;
   border-radius: 100px;
   padding: 5px 12px;

@@ -13,7 +13,7 @@ import {
 } from '../utils/calculations'
 import './MacroCalculator.css'
 
-const MACRO_COLORS = { protein: '#1B4332', carbs: '#C5F547', fat: '#FF8A5C' }
+const MACRO_COLORS = { protein: 'var(--chart-protein)', carbs: '#C5F547', fat: '#FF8A5C' }
 
 export default function MacroCalculator() {
   const { stats, patch } = useStats()

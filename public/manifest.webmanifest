@@ -1,0 +1,33 @@
+{
+  "name": "Sprout — Calorie & Health Calculator",
+  "short_name": "Sprout",
+  "description": "Free calorie, TDEE, macro, BMI, ideal weight, water intake, and body fat calculators in one toolkit.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#faf9f3",
+  "theme_color": "#1b4332",
+  "lang": "en-US",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(250, 249, 243, 0.82);
+  background: var(--nav-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -52,6 +52,10 @@
   padding: 11px 20px;
   font-size: 14px;
   text-decoration: none;
+}
+
+.nav__theme-toggle {
+  margin-left: 4px;
 }
 
 .nav__burger {

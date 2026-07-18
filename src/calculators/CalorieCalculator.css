@@ -6,7 +6,7 @@
 }
 
 .calc-hero-card {
-  background: var(--forest);
+  background: var(--surface-deep);
   color: #fff;
   padding: 40px 32px;
   display: flex;
@@ -70,7 +70,7 @@
   position: relative;
   text-align: left;
   border: 1.5px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   padding: 20px 18px;
   border-radius: 20px 6px 20px 6px;
@@ -109,7 +109,7 @@
 }
 
 .goal-card.is-active {
-  border-color: var(--forest);
+  border-color: var(--surface-deep);
   background: var(--lime);
   box-shadow: var(--shadow-soft);
 }

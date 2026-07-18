@@ -21,7 +21,7 @@ export default function DonutChart({ segments, size = 200, strokeWidth = 26 }) {
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke="#E6ECDD"
+        stroke="var(--card-deep)"
         strokeWidth={strokeWidth}
       />
       {arcs.map((arc, i) => {

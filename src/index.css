@@ -11,6 +11,10 @@
   --card-deep: #e6ecdd;
   --coral: #ff8a5c;
   --line: rgba(20, 40, 29, 0.1);
+  --surface: #ffffff;
+  --surface-deep: #1b4332;
+  --nav-bg: rgba(250, 249, 243, 0.82);
+  --chart-protein: #1b4332;
 
   --font-display: 'Fraunces', 'Georgia', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -24,8 +28,33 @@
   color-scheme: light;
 }
 
+:root[data-theme='dark'] {
+  --bg: #0f1712;
+  --forest: #ecf3e7;
+  --sage: #8fb3a6;
+  --sage-light: #b9d3c7;
+  --text: #d8e5d9;
+  --card: #16231b;
+  --card-deep: #1e2f24;
+  --line: rgba(255, 255, 255, 0.1);
+  --surface: #223327;
+  --nav-bg: rgba(15, 23, 18, 0.82);
+  --chart-protein: #6fa98c;
+
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-lift: 0 20px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='dark'] .grain-overlay {
+  mix-blend-mode: overlay;
+  opacity: 0.05;
+}
+
 * {
   box-sizing: border-box;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 html {

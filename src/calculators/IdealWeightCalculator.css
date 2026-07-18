@@ -6,7 +6,7 @@
 }
 
 .ideal-range-card {
-  background: var(--forest);
+  background: var(--surface-deep);
   color: #fff;
   padding: 40px 32px;
   display: flex;
@@ -67,7 +67,7 @@
 }
 
 .ideal-row {
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: 18px 6px 18px 6px;
   padding: 18px 22px;

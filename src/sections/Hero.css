@@ -81,7 +81,7 @@
 
 .hero__visual {
   position: relative;
-  background: var(--forest);
+  background: var(--surface-deep);
   color: #fff;
   padding: 44px 36px;
   display: flex;

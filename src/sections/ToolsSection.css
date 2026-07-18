@@ -48,6 +48,13 @@
   margin-bottom: 24px;
 }
 
+.tools__content-top-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
 @media (max-width: 980px) {
   .tools__layout {
     grid-template-columns: 1fr;

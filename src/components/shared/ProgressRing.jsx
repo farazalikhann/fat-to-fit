@@ -4,8 +4,8 @@ export default function ProgressRing({
   size = 220,
   strokeWidth = 18,
   progress = 0.7,
-  color = '#1B4332',
-  trackColor = '#E6ECDD',
+  color = 'var(--surface-deep)',
+  trackColor = 'var(--card-deep)',
   children,
 }) {
   const radius = (size - strokeWidth) / 2

@@ -1,0 +1,75 @@
+.water-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.water-card__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--sage);
+}
+
+.water-card__number-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 10px 0 14px;
+}
+
+.water-card__number {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--forest);
+  line-height: 1;
+}
+
+.water-card__unit {
+  font-size: 16px;
+  color: var(--sage);
+  font-weight: 600;
+}
+
+.water-card__sub {
+  font-size: 14.5px;
+  color: var(--forest);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.water-card__note {
+  font-size: 12.5px;
+  color: var(--sage);
+  line-height: 1.6;
+  max-width: 360px;
+}
+
+.water-card__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottle-fill__glasses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 320px;
+}
+
+@media (max-width: 720px) {
+  .water-card {
+    grid-template-columns: 1fr;
+  }
+  .water-card__number {
+    font-size: 52px;
+  }
+}

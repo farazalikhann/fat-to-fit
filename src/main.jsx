@@ -7,7 +7,7 @@ import { StatsProvider } from './context/StatsContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <StatsProvider>
         <App />
       </StatsProvider>

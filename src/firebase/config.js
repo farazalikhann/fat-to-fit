@@ -13,10 +13,16 @@ const firebaseConfig = {
 const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'appId']
 const missingKeys = requiredKeys.filter((key) => !firebaseConfig[key])
 if (missingKeys.length) {
-  throw new Error(
+  const error = new Error(
     `Missing Firebase config value(s): ${missingKeys.join(', ')}. ` +
-      'Check that your .env file defines VITE_FIREBASE_* variables (see .env.example).',
+      'Check that your .env file defines VITE_FIREBASE_* variables (see .env.example), ' +
+      'or that CI has the matching repository secrets set.',
   )
+  // Distinguishable from Firebase's own AIError codes so callers (e.g.
+  // ai.js) can show a specific "not configured" message instead of a
+  // generic fallback.
+  error.code = 'missing-config'
+  throw error
 }
 
 // Guard against "Firebase App named '[DEFAULT]' already exists" during Vite HMR.

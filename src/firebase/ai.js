@@ -11,19 +11,63 @@ The user describes a meal in plain, sometimes informal language (e.g. "2 chapati
 Respond with ONLY raw JSON matching the required schema - no markdown code fences, no backticks, no explanations, no text outside the JSON object.`
 
 const ERROR_MESSAGES = {
-  'fetch-error': 'Network error - check your connection and try again.',
+  // Firebase config missing entirely - a deployment/setup problem, not
+  // something the user did. Distinct from AI Logic being disabled below.
+  'missing-config':
+    "AI features aren't set up on this deployment yet (missing Firebase configuration). This isn't something wrong with your meal description - please let the site owner know.",
+  'no-api-key':
+    "AI features aren't set up on this deployment yet (missing Firebase configuration).",
+  'no-app-id':
+    "AI features aren't set up on this deployment yet (missing Firebase configuration).",
+  'no-project-id':
+    "AI features aren't set up on this deployment yet (missing Firebase configuration).",
+  // Firebase project exists and is configured, but the underlying Google
+  // Cloud API itself hasn't been enabled/propagated yet.
+  'api-not-enabled':
+    'AI Logic is not enabled for this Firebase project yet (the underlying Google Cloud API needs to be turned on).',
+  // Model/request/response-shape issues.
   'request-error': 'The AI service could not process that request. Please try rephrasing your meal.',
   'response-error': 'The AI service returned an unexpected response. Please try again.',
-  'api-not-enabled': 'AI Logic is not enabled for this Firebase project yet.',
   'parse-failed': "The AI response wasn't valid. Please try again.",
-  'no-api-key': 'Missing Firebase configuration.',
-  'no-app-id': 'Missing Firebase configuration.',
-  'no-project-id': 'Missing Firebase configuration.',
 }
 
 function friendlyAiError(error) {
-  const message = ERROR_MESSAGES[error?.code]
-  return new Error(message || 'Could not analyze this meal right now. Please try again.')
+  // Always log the real error for debugging - the UI only ever shows the
+  // friendly message below, never this raw detail.
+  console.error('[AI Meal Analyzer]', error?.code || '(no code)', '-', error?.message, error)
+
+  // 'fetch-error' is a catch-all in the Firebase AI SDK that wraps both true
+  // network failures AND HTTP-level API errors (403, 429, 500...) - the
+  // actual HTTP status (when present) is what tells them apart. Confirmed
+  // against the real project: a 403 here can mean "AI Logic onboarding
+  // hasn't been completed in the Firebase Console yet", which is a
+  // different fix from api-not-enabled above and from a real network drop.
+  if (error?.code === 'fetch-error') {
+    const status = error?.customErrorData?.status
+    if (status === 403) {
+      return new Error(
+        "AI Logic isn't fully set up for this Firebase project yet (permission denied). The site owner needs to complete AI Logic onboarding in the Firebase Console.",
+      )
+    }
+    if (status === 429) {
+      return new Error('The AI service is rate-limited right now. Please try again in a moment.')
+    }
+    if (typeof status === 'number' && status >= 400) {
+      return new Error(`The AI service returned an error (${status}). Please try again shortly.`)
+    }
+    return new Error('Network error - check your connection and try again.')
+  }
+
+  const known = ERROR_MESSAGES[error?.code]
+  if (known) return new Error(known)
+
+  // Fallback heuristic: a raw network failure that wasn't wrapped in an
+  // AIError with a recognized code (e.g. the browser itself went offline).
+  if (error instanceof TypeError || /network|fetch/i.test(error?.message || '')) {
+    return new Error('Network error - check your connection and try again.')
+  }
+
+  return new Error('Could not analyze this meal right now. Please try again.')
 }
 
 // The Firebase AI Logic SDK is fairly large (schema builders, streaming,

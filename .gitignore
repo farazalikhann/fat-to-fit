@@ -12,6 +12,17 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (contains Firebase config - keep out of git)
+.env
+.env.local
+.env.*.local
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

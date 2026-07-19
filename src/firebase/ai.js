@@ -1,5 +1,3 @@
-import { app } from './config'
-
 const SYSTEM_INSTRUCTION = `You are a nutrition estimation assistant inside a calorie-tracking app.
 
 The user describes a meal in plain, sometimes informal language (e.g. "2 chapati, 1 bowl dal, 1 cup rice"). For each message:
@@ -34,7 +32,13 @@ function friendlyAiError(error) {
 let modelPromise = null
 function getMealModel() {
   if (!modelPromise) {
-    modelPromise = import('firebase/ai').then(({ getAI, getGenerativeModel, GoogleAIBackend, Schema }) => {
+    // `./config` is dynamically imported here too (not statically at the top
+    // of this file): it throws if VITE_FIREBASE_* env vars are missing, and
+    // that needs to surface as a catchable rejection scoped to this one
+    // feature - not a top-level throw that takes down the whole app bundle
+    // for every visitor regardless of whether they touch AI Meal at all.
+    modelPromise = Promise.all([import('firebase/ai'), import('./config')]).then(
+      ([{ getAI, getGenerativeModel, GoogleAIBackend, Schema }, { app }]) => {
       const mealItemSchema = Schema.object({
         properties: {
           food: Schema.string(),

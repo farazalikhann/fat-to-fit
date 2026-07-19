@@ -4,8 +4,10 @@ import { useAuth } from '../context/AuthContext'
 import DailyDiary from '../components/tracker/DailyDiary'
 import WeeklyChart from '../components/tracker/WeeklyChart'
 import ProfileCard from '../components/tracker/ProfileCard'
+import TrackerPdfButton from '../components/tracker/TrackerPdfButton'
+import MonthlyCalendar from '../components/tracker/MonthlyCalendar'
 import MealAnalyzer from '../calculators/MealAnalyzer'
-import { IconGoogle } from '../components/shared/Icons'
+import AuthGate from '../components/shared/AuthGate'
 import Spinner from '../components/shared/Spinner'
 import { getDateKey, DAY_LABELS } from '../utils/dateKeys'
 import './Tracker.css'
@@ -16,7 +18,7 @@ import './Tracker.css'
 const DEFAULT_PROFILE = { dailyGoal: 2000, heightCm: null, weightKg: null }
 
 export default function Tracker() {
-  const { user, authReady, signIn } = useAuth()
+  const { user, authReady } = useAuth()
 
   useEffect(() => {
     document.title = 'My Tracker — Sprout'
@@ -32,56 +34,14 @@ export default function Tracker() {
     )
   }
 
-  if (!user) {
-    return <SignInPrompt signIn={signIn} />
-  }
-
-  return <TrackerDashboard user={user} />
-}
-
-function SignInPrompt({ signIn }) {
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-
-  const handleSignIn = async () => {
-    if (busy) return
-    setBusy(true)
-    setError('')
-    try {
-      await signIn()
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
   return (
-    <div className="container tracker-page">
-      <motion.div
-        className="tracker-signin organic-3"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <span className="tracker-signin__eyebrow">My Tracker</span>
-        <h1>Sign in to start tracking your meals</h1>
-        <p>
-          Log what you eat, see today's running total, and track the last 7 days - all synced to
-          your account. Every calculator on this site still works without signing in; an account
-          just unlocks your personal food diary.
-        </p>
-        <button
-          type="button"
-          className="btn btn-primary tracker-signin__btn"
-          onClick={handleSignIn}
-          disabled={busy}
-        >
-          <IconGoogle /> {busy ? 'Signing in...' : 'Sign in with Google'}
-        </button>
-        {error && <p className="tracker-signin__error">{error}</p>}
-      </motion.div>
-    </div>
+    <AuthGate
+      eyebrow="My Tracker"
+      title="Sign in to start tracking your meals"
+      description="Log what you eat, see today's running total, and track the last 7 days - all synced to your account. Every calculator on this site still works without signing in; an account just unlocks your personal food diary."
+    >
+      <TrackerDashboard user={user} />
+    </AuthGate>
   )
 }
 
@@ -99,6 +59,11 @@ function buildTrackerData(entries) {
     totalsByDay[e.dateKey] = (totalsByDay[e.dateKey] || 0) + (e.calories || 0)
   })
 
+  const entriesByDay = {}
+  entries.forEach((e) => {
+    ;(entriesByDay[e.dateKey] ??= []).push(e)
+  })
+
   const chartDays = []
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now)
@@ -107,8 +72,10 @@ function buildTrackerData(entries) {
     chartDays.push({
       dateKey: key,
       label: i === 0 ? 'Today' : DAY_LABELS[d.getDay()],
+      fullDate: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
       isToday: i === 0,
       total: Math.round(totalsByDay[key] || 0),
+      entries: (entriesByDay[key] || []).slice().sort((a, b) => b.createdAt - a.createdAt),
     })
   }
 
@@ -172,9 +139,9 @@ function TrackerDashboard({ user }) {
     await addEntry(user.uid, { food, calories, source: 'manual' })
   }
 
-  const handleDelete = async (entryId) => {
+  const handleDelete = async (entry) => {
     const { deleteEntry } = await import('../firebase/entries')
-    await deleteEntry(user.uid, entryId)
+    await deleteEntry(user.uid, entry)
   }
 
   const handleSaveProfile = async (data) => {
@@ -210,10 +177,22 @@ function TrackerDashboard({ user }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <h3>Last 7 days</h3>
+          <div className="tracker-chart-card__head">
+            <h3>Last 7 days</h3>
+            <TrackerPdfButton userName={user.displayName} chartDays={chartDays} />
+          </div>
           <WeeklyChart days={chartDays} />
         </motion.div>
       </div>
+
+      <motion.div
+        className="tracker-calendar-section"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        <MonthlyCalendar uid={user.uid} dailyGoal={profile.dailyGoal} />
+      </motion.div>
     </div>
   )
 }

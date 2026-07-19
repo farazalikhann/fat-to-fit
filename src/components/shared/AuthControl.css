@@ -76,3 +76,147 @@
   border-radius: 12px 4px 12px 12px;
   z-index: 20;
 }
+
+.auth-control__error--inline {
+  position: static;
+  width: auto;
+  margin-top: 4px;
+}
+
+/* ---------- Dropdown menu (desktop) ---------- */
+.auth-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px 4px 18px 18px;
+  box-shadow: var(--shadow-lift);
+  padding: 8px;
+  z-index: 30;
+  transform-origin: top right;
+}
+
+.auth-menu__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 6px;
+}
+
+.auth-menu__name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--forest);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-menu__email {
+  font-size: 12px;
+  color: var(--sage);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s var(--ease-out);
+}
+
+.auth-menu__item:hover {
+  background: var(--card);
+}
+
+.auth-menu__item--danger {
+  color: var(--coral);
+}
+
+.auth-menu__item:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- Inline variant (mobile nav panel) ---------- */
+.auth-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 0 4px;
+}
+
+.auth-inline__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.auth-inline__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.auth-inline__name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--forest);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-inline__email {
+  font-size: 12.5px;
+  color: var(--sage);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-inline__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--forest);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.auth-inline__item--danger {
+  color: var(--coral);
+}
+
+.auth-inline__item:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

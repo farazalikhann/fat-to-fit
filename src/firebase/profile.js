@@ -1,7 +1,14 @@
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore'
 import { db } from './db'
 
-export const DEFAULT_PROFILE = { dailyGoal: 2000, heightCm: null, weightKg: null }
+export const DEFAULT_PROFILE = {
+  dailyGoal: 2000,
+  heightCm: null,
+  weightKg: null,
+  gender: null,
+  age: null,
+  activityLevel: null,
+}
 
 function profileDoc(uid) {
   return doc(db, 'users', uid, 'profile', 'main')

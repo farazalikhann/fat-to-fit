@@ -62,9 +62,6 @@
   margin-left: 4px;
 }
 
-.nav__mobile-auth {
-  padding: 16px 0 4px;
-}
 
 .nav__burger {
   display: none;
@@ -102,7 +99,7 @@
     overflow: hidden;
     padding: 0 24px;
   }
-  .nav__mobile a {
+  .nav__mobile > a {
     padding: 14px 0;
     border-top: 1px solid var(--line);
     text-decoration: none;

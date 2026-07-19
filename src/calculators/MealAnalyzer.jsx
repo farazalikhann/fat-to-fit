@@ -88,6 +88,17 @@ export default function MealAnalyzer() {
     }
   }
 
+  const handleLogAnother = () => {
+    setDescription('')
+    setPhoto(null)
+    setPhotoError('')
+    setResult(null)
+    setStatus('idle')
+    setError('')
+    setSaveState('idle')
+    setSaveError('')
+  }
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault()
@@ -274,18 +285,20 @@ export default function MealAnalyzer() {
 
             {user && (
               <div className="meal-save">
-                <button
-                  type="button"
-                  className="btn btn-ghost meal-save__btn"
-                  onClick={handleSaveToDiary}
-                  disabled={saveState === 'saving' || saveState === 'saved'}
-                >
-                  {saveState === 'saved'
-                    ? "✓ Saved to today's diary"
-                    : saveState === 'saving'
-                      ? 'Saving...'
-                      : "Save to today's diary"}
-                </button>
+                {saveState === 'saved' ? (
+                  <button type="button" className="btn btn-ghost meal-save__btn is-saved" disabled>
+                    ✓ Saved to today's diary
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-ghost meal-save__btn"
+                    onClick={handleSaveToDiary}
+                    disabled={saveState === 'saving'}
+                  >
+                    {saveState === 'saving' ? 'Saving...' : "Save to today's diary"}
+                  </button>
+                )}
                 <AnimatePresence>
                   {saveState === 'error' && (
                     <motion.p
@@ -301,6 +314,10 @@ export default function MealAnalyzer() {
                 </AnimatePresence>
               </div>
             )}
+
+            <button type="button" className="btn btn-primary meal-log-another" onClick={handleLogAnother}>
+              Log another meal
+            </button>
           </div>
         )}
       </motion.div>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
-const ThemeContext = createContext(null)
+export const ThemeContext = createContext(null)
 
 const STORAGE_KEY = 'sprout.theme'
 

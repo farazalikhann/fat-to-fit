@@ -50,9 +50,11 @@ export default function About() {
         <Reveal delay={0.2} className="static-page__card">
           <h2>Your data stays with you</h2>
           <p>
-            The stats you enter (age, weight, height, activity level) are saved only in your
-            browser's local storage so your numbers persist between visits — we never see them,
-            and they're never sent to a server. See our{' '}
+            The stats you enter (age, weight, height, activity level) are saved in your browser's
+            local storage so your numbers persist between visits. If you choose to sign in with
+            Google, those same stats also sync to your private account so they follow you to a
+            new device — that data is scoped to your account only, never visible to other users
+            or used for anything beyond auto-filling your own calculators. See our{' '}
             <Link to="/privacy">Privacy Policy</Link> for details.
           </p>
         </Reveal>

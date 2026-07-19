@@ -4,17 +4,21 @@ import { ACTIVITY_LEVELS } from '../utils/calculations'
 import { cmToFtIn, ftInToCm, kgToLbs, lbsToKg, round } from '../utils/units'
 import './SharedStatsPanel.css'
 
-export default function SharedStatsPanel() {
+export default function SharedStatsPanel({
+  eyebrow = 'Your stats',
+  title = 'Enter once, use everywhere',
+  id = 'shared-stats',
+}) {
   const { stats, patch } = useStats()
   const { ft, inch } = cmToFtIn(stats.heightCm)
   const weightDisplay =
     stats.weightUnit === 'kg' ? round(stats.weightKg, 1) : round(kgToLbs(stats.weightKg), 1)
 
   return (
-    <div id="shared-stats" className="stats-panel organic-3">
+    <div id={id} className="stats-panel organic-3">
       <div className="stats-panel__head">
-        <span className="stats-panel__eyebrow">Your stats</span>
-        <h3>Enter once, use everywhere</h3>
+        <span className="stats-panel__eyebrow">{eyebrow}</span>
+        <h3>{title}</h3>
       </div>
 
       <div className="stats-panel__grid">

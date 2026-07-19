@@ -12,7 +12,7 @@ export default function Privacy() {
       <Reveal>
         <span className="static-page__eyebrow">Legal</span>
         <h1>Privacy Policy</h1>
-        <span className="static-page__updated">Last updated: July 18, 2026</span>
+        <span className="static-page__updated">Last updated: July 19, 2026</span>
       </Reveal>
 
       <div className="static-page__body">
@@ -30,10 +30,17 @@ export default function Privacy() {
           <h2>Information you enter into calculators</h2>
           <p>
             The health information you enter — age, weight, height, activity level, and body
-            measurements — is processed entirely in your browser to perform calculations. This
-            data is stored only in your browser's local storage so it persists between visits on
-            the same device. We do not transmit, collect, or store this information on our
-            servers, and we have no access to it.
+            measurements — is processed entirely in your browser to perform calculations. By
+            default this data is stored only in your browser's local storage so it persists
+            between visits on the same device, and we do not transmit, collect, or store it on
+            our servers. If you choose to sign in with a Google account, your gender, age,
+            height, weight, and activity level are additionally saved to a private Firestore
+            database record tied only to your account (so they auto-fill on your next visit or
+            device); the same applies to your food diary and daily calorie goal if you use My
+            Tracker. This account data is protected by security rules that restrict it to your
+            own signed-in account only — no other user or visitor can read or write it, and we
+            do not use it for anything beyond providing the Service back to you. Signing in is
+            entirely optional; every calculator continues to work without an account.
           </p>
         </Reveal>
 

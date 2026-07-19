@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import Hero from '../sections/Hero'
+import QuickAccess from '../sections/QuickAccess'
 import ToolsSection from '../sections/ToolsSection'
 import ContentSEO from '../sections/ContentSEO'
 import FAQ from '../sections/FAQ'
@@ -21,6 +22,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <QuickAccess />
       <ToolsSection />
       <ContentSEO />
       <FAQ />

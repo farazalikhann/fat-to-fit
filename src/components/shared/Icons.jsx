@@ -120,3 +120,43 @@ export const IconClose = (p) => (
     <path d="M6 6l12 12M18 6 6 18" />
   </svg>
 )
+
+export const IconSettings = (p) => (
+  <svg viewBox="0 0 24 24" width="17" height="17" {...common} {...p}>
+    <circle cx="12" cy="12" r="3.2" />
+    <path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2.06 2.06 0 1 1-2.92 2.92l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56v.17a2.06 2.06 0 1 1-4.12 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2.06 2.06 0 1 1-2.92-2.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03h-.17a2.06 2.06 0 1 1 0-4.12h.09a1.7 1.7 0 0 0 1.56-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.06 2.06 0 1 1 2.92-2.92l.06.06a1.7 1.7 0 0 0 1.87.34h.08a1.7 1.7 0 0 0 1.03-1.56V4.6a2.06 2.06 0 1 1 4.12 0v.09a1.7 1.7 0 0 0 1.03 1.56h.08a1.7 1.7 0 0 0 1.87-.34l.06-.06a2.06 2.06 0 1 1 2.92 2.92l-.06.06a1.7 1.7 0 0 0-.34 1.87v.08a1.7 1.7 0 0 0 1.56 1.03h.17a2.06 2.06 0 1 1 0 4.12h-.09a1.7 1.7 0 0 0-1.56 1.03Z" />
+  </svg>
+)
+
+export const IconLogout = (p) => (
+  <svg viewBox="0 0 24 24" width="17" height="17" {...common} {...p}>
+    <path d="M15 17.5V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1.5" />
+    <path d="M21 12H10m11 0-3.5-3.5M21 12l-3.5 3.5" />
+  </svg>
+)
+
+export const IconHome = (p) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" {...common} {...p}>
+    <path d="M4 11.5 12 4l8 7.5" />
+    <path d="M6 10v9a1 1 0 0 0 1 1h3v-5.5h4V20h3a1 1 0 0 0 1-1v-9" />
+  </svg>
+)
+
+export const IconChevronLeft = (p) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" {...common} {...p}>
+    <path d="M15 5 8 12l7 7" />
+  </svg>
+)
+
+export const IconChevronRight = (p) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" {...common} {...p}>
+    <path d="M9 5l7 7-7 7" />
+  </svg>
+)
+
+export const IconCalendar = (p) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" {...common} {...p}>
+    <rect x="4" y="5" width="16" height="16" rx="2.5" />
+    <path d="M8 3v4M16 3v4M4 10h16" />
+  </svg>
+)

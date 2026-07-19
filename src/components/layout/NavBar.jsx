@@ -85,7 +85,7 @@ export default function NavBar() {
               Privacy
             </Link>
             <div className="nav__mobile-auth">
-              <AuthControl />
+              <AuthControl variant="inline" onNavigate={() => setOpen(false)} />
             </div>
           </motion.nav>
         )}

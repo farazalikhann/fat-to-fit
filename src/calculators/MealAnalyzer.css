@@ -270,11 +270,24 @@
   padding: 10px 20px;
 }
 
+.meal-save__btn.is-saved {
+  color: var(--forest);
+  border-color: var(--lime-2);
+  background: rgba(197, 245, 71, 0.15);
+  opacity: 1;
+}
+
 .meal-save__error {
   font-size: 12.5px;
   color: var(--coral);
   font-weight: 600;
   text-align: center;
+}
+
+.meal-log-another {
+  align-self: center;
+  font-size: 13px;
+  padding: 10px 20px;
 }
 
 @media (max-width: 860px) {

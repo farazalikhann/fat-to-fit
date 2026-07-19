@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Tabs from '../components/shared/Tabs'
 import StatsChip from '../components/layout/StatsChip'
@@ -25,8 +26,22 @@ const TABS = [
 ]
 
 export default function ToolsSection() {
-  const [active, setActive] = useState('calories')
+  const [searchParams] = useSearchParams()
+  const [active, setActive] = useState(() => {
+    const requested = searchParams.get('tool')
+    return TABS.some((t) => t.id === requested) ? requested : 'calories'
+  })
   const ActiveComponent = TABS.find((t) => t.id === active)?.Component ?? CalorieCalculator
+
+  // Lets other parts of the home page (e.g. the quick-access cards) jump
+  // straight to a specific calculator via `?tool=<id>`, even after this
+  // section is already mounted.
+  useEffect(() => {
+    const requested = searchParams.get('tool')
+    if (requested && TABS.some((t) => t.id === requested) && requested !== active) {
+      setActive(requested)
+    }
+  }, [searchParams])
 
   return (
     <section id="tools" className="tools">

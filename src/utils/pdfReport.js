@@ -182,3 +182,107 @@ export async function generatePdfReport(stats) {
 
   doc.save('sprout-health-report.pdf')
 }
+
+// `chartDays`: [{ dateKey, label, fullDate, isToday, total, entries }] oldest
+// -> newest, exactly what Tracker.jsx already computes for the weekly chart.
+export async function generateTrackerReport({ userName, chartDays }) {
+  const { jsPDF } = await import('jspdf')
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const pageHeight = doc.internal.pageSize.getHeight()
+  const margin = 48
+  let y = 140
+
+  doc.setFillColor(...FOREST)
+  doc.rect(0, 0, pageWidth, 110, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...LIME)
+  doc.text('SPROUT', margin, 40)
+  doc.setFontSize(22)
+  doc.setTextColor(255, 255, 255)
+  doc.text('Your 7-Day Report', margin, 68)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.setTextColor(215, 227, 217)
+  const dateStr = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  doc.text(`Generated ${dateStr}${userName ? ` for ${userName}` : ''}`, margin, 88)
+
+  const ensureSpace = (needed = 90) => {
+    if (y + needed > pageHeight - 56) {
+      doc.addPage()
+      y = margin
+    }
+  }
+
+  const addSectionTitle = (title) => {
+    ensureSpace(46)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(14)
+    doc.setTextColor(...FOREST)
+    doc.text(title, margin, y)
+    y += 7
+    doc.setDrawColor(...LINE)
+    doc.line(margin, y, pageWidth - margin, y)
+    y += 20
+  }
+
+  const addRow = (label, value, opts = {}) => {
+    ensureSpace(22)
+    doc.setFont('helvetica', opts.bold ? 'bold' : 'normal')
+    doc.setFontSize(opts.small ? 10 : 11)
+    doc.setTextColor(...(opts.dim ? MUTED : SAGE))
+    doc.text(label, margin + (opts.indent || 0), y)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(...TEXT)
+    doc.text(String(value), pageWidth - margin, y, { align: 'right' })
+    y += opts.small ? 15 : 18
+  }
+
+  const totalWeek = chartDays.reduce((sum, d) => sum + (d.total || 0), 0)
+  const daysLogged = chartDays.filter((d) => d.total > 0).length
+  const avgPerLoggedDay = daysLogged > 0 ? Math.round(totalWeek / daysLogged) : 0
+
+  addSectionTitle('Summary')
+  addRow('Total calories (7 days)', `${Math.round(totalWeek)} kcal`)
+  addRow('Days logged', `${daysLogged} / 7`)
+  addRow('Average per logged day', `${avgPerLoggedDay} kcal`)
+  y += 6
+
+  addSectionTitle('Daily Totals')
+  chartDays.forEach((day) => {
+    addRow(day.fullDate || day.label, day.total > 0 ? `${day.total} kcal` : 'No entries logged')
+  })
+  y += 6
+
+  chartDays.forEach((day) => {
+    if (!day.entries || day.entries.length === 0) return
+    addSectionTitle(`${day.fullDate || day.label} — ${day.total} kcal`)
+    day.entries.forEach((entry) => {
+      addRow(entry.food, `${entry.calories} kcal`, { small: true })
+    })
+    y += 4
+  })
+
+  const totalPages = doc.internal.getNumberOfPages()
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(...MUTED)
+    doc.text(
+      'AI-estimated and self-reported values - not medical advice. Consult a qualified\nhealthcare provider before making changes to your diet or exercise routine.',
+      margin,
+      pageHeight - 40,
+    )
+    doc.text(`sproutcalc.com  -  Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 16, {
+      align: 'right',
+    })
+  }
+
+  doc.save('sprout-7-day-report.pdf')
+}

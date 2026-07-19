@@ -95,7 +95,7 @@ export default function DailyDiary({ entries, total, onAddManual, onDelete }) {
                 <button
                   type="button"
                   className="daily-diary__delete"
-                  onClick={() => onDelete(entry.id)}
+                  onClick={() => onDelete(entry)}
                   aria-label={`Delete ${entry.food}`}
                 >
                   <IconTrash />

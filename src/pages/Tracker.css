@@ -11,50 +11,6 @@
   color: var(--sage);
 }
 
-.tracker-signin {
-  max-width: 560px;
-  margin: 40px auto;
-  background: var(--card);
-  border: 1px solid var(--line);
-  padding: 44px 40px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.tracker-signin__eyebrow {
-  display: inline-block;
-  font-size: 12.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--sage);
-}
-
-.tracker-signin h1 {
-  font-size: 30px;
-}
-
-.tracker-signin p {
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--text);
-  opacity: 0.85;
-  max-width: 420px;
-}
-
-.tracker-signin__btn {
-  margin-top: 8px;
-}
-
-.tracker-signin__error {
-  font-size: 13px;
-  color: var(--coral);
-  font-weight: 600;
-}
-
 .tracker-header {
   margin-bottom: 32px;
 }
@@ -105,9 +61,21 @@
   top: 92px;
 }
 
+.tracker-chart-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
 .tracker-chart-card h3 {
   font-size: 20px;
-  margin-bottom: 8px;
+}
+
+.tracker-calendar-section {
+  margin-top: 28px;
 }
 
 @media (max-width: 980px) {
@@ -120,12 +88,6 @@
 }
 
 @media (max-width: 640px) {
-  .tracker-signin {
-    padding: 32px 24px;
-  }
-  .tracker-signin h1 {
-    font-size: 24px;
-  }
   .tracker-header h1 {
     font-size: 28px;
   }

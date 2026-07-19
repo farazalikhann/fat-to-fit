@@ -25,6 +25,56 @@
   line-height: 1.5;
 }
 
+.meal-photo-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.meal-photo-btn {
+  align-self: flex-start;
+  font-size: 13px;
+  padding: 9px 16px;
+}
+
+.meal-photo-preview {
+  position: relative;
+  align-self: flex-start;
+  width: 88px;
+  height: 88px;
+  border-radius: 16px 4px 16px 4px;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+}
+
+.meal-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meal-photo-preview__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: rgba(15, 23, 18, 0.65);
+  color: #fff;
+  cursor: pointer;
+}
+
 .meal-inputs__submit {
   align-self: flex-start;
 }

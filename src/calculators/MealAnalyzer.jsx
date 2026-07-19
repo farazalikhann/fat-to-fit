@@ -1,30 +1,63 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TextAreaInput } from '../components/shared/Inputs'
 import Spinner from '../components/shared/Spinner'
 import NumberCountUp from '../components/shared/NumberCountUp'
-import { IconSparkle } from '../components/shared/Icons'
-import { analyzeMeal } from '../firebase/ai'
+import { IconSparkle, IconCamera, IconClose } from '../components/shared/Icons'
+import { analyzeMeal, analyzeMealPhoto } from '../firebase/ai'
+import { compressImage } from '../utils/imageCompress'
 import { useAuth } from '../context/AuthContext'
 import './MealAnalyzer.css'
 
 export default function MealAnalyzer() {
   const { user } = useAuth()
+  const fileInputRef = useRef(null)
   const [description, setDescription] = useState('')
+  const [photo, setPhoto] = useState(null) // { base64, mimeType, previewUrl }
+  const [photoError, setPhotoError] = useState('')
+  const [compressing, setCompressing] = useState(false)
   const [status, setStatus] = useState('idle') // idle | loading | error | success
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
   const [saveError, setSaveError] = useState('')
 
+  const handlePhotoSelect = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-selecting the same file later
+    if (!file) return
+    setCompressing(true)
+    setPhotoError('')
+    try {
+      const compressed = await compressImage(file)
+      setPhoto(compressed)
+    } catch (err) {
+      setPhotoError(err.message)
+    } finally {
+      setCompressing(false)
+    }
+  }
+
+  const handleRemovePhoto = () => {
+    setPhoto(null)
+    setPhotoError('')
+  }
+
   const handleAnalyze = async () => {
     if (status === 'loading') return
+    if (!description.trim() && !photo) {
+      setError('Describe your meal or attach a photo before analyzing.')
+      setStatus('error')
+      return
+    }
     setStatus('loading')
     setError('')
     setSaveState('idle')
     setSaveError('')
     try {
-      const data = await analyzeMeal(description)
+      const data = photo
+        ? await analyzeMealPhoto(photo.base64, photo.mimeType, description)
+        : await analyzeMeal(description)
       setResult(data)
       setStatus('success')
     } catch (err) {
@@ -39,8 +72,9 @@ export default function MealAnalyzer() {
     setSaveError('')
     try {
       const { addEntry } = await import('../firebase/entries')
+      const foodLabel = description.trim() || result.items.map((i) => i.food).join(', ')
       await addEntry(user.uid, {
-        food: description.trim(),
+        food: foodLabel,
         calories: result.total_calories,
         protein_g: result.total_protein_g,
         carbs_g: result.total_carbs_g,
@@ -71,7 +105,7 @@ export default function MealAnalyzer() {
       >
         <h4>AI Meal Analyzer</h4>
         <p className="meal-inputs__hint">
-          Describe what you ate in plain language and Gemini will estimate calories and macros.
+          Describe what you ate, attach a photo, or both - Gemini will estimate calories and macros.
         </p>
 
         <TextAreaInput
@@ -82,11 +116,59 @@ export default function MealAnalyzer() {
           rows={4}
         />
 
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handlePhotoSelect}
+          className="meal-photo-input"
+        />
+
+        <AnimatePresence mode="wait">
+          {photo ? (
+            <motion.div
+              key="preview"
+              className="meal-photo-preview"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.25 }}
+            >
+              <img src={photo.previewUrl} alt="Meal preview" />
+              <button
+                type="button"
+                className="meal-photo-preview__remove"
+                onClick={handleRemovePhoto}
+                aria-label="Remove photo"
+              >
+                <IconClose />
+              </button>
+            </motion.div>
+          ) : (
+            <motion.button
+              key="add"
+              type="button"
+              className="btn btn-ghost meal-photo-btn"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={compressing}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {compressing ? <Spinner size={14} /> : <IconCamera />}
+              {compressing ? 'Processing photo...' : 'Add a photo'}
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        {photoError && <p className="meal-inputs__error">{photoError}</p>}
+
         <button
           type="button"
           className="btn btn-primary meal-inputs__submit"
           onClick={handleAnalyze}
-          disabled={status === 'loading'}
+          disabled={status === 'loading' || compressing}
         >
           {status === 'loading' ? (
             <>
@@ -123,14 +205,17 @@ export default function MealAnalyzer() {
         {status === 'loading' && (
           <div className="meal-result__empty">
             <Spinner size={28} />
-            <p>Analyzing your meal...</p>
+            <p>{photo ? 'Analyzing your photo...' : 'Analyzing your meal...'}</p>
           </div>
         )}
 
         {status !== 'loading' && status !== 'success' && (
           <div className="meal-result__empty">
             <IconSparkle className="meal-result__empty-icon" />
-            <p>Describe a meal on the left and click Analyze to see estimated calories and macros.</p>
+            <p>
+              Describe a meal or attach a photo on the left, then click Analyze to see estimated
+              calories and macros.
+            </p>
           </div>
         )}
 

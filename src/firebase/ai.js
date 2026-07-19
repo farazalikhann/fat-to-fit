@@ -1,12 +1,13 @@
 const SYSTEM_INSTRUCTION = `You are a nutrition estimation assistant inside a calorie-tracking app.
 
-The user describes a meal in plain, sometimes informal language (e.g. "2 chapati, 1 bowl dal, 1 cup rice"). For each message:
+The user will either describe a meal in plain, sometimes informal language (e.g. "2 chapati, 1 bowl dal, 1 cup rice"), or send a photo of their meal (optionally with a short caption), or both. For each request:
 
-1. Identify every distinct food item and its quantity from the text.
-2. If a quantity is vague or missing (e.g. "some rice", "a bowl of dal"), estimate a standard serving size and say so in the "quantity" field (e.g. "1 cup (est.)").
+1. Identify every distinct food item and its quantity - from the text, and/or visually from the photo (use plate size, utensil size, and typical portioning as visual cues for quantity).
+2. If a quantity is vague, missing, or must be estimated visually, estimate a standard serving size and say so in the "quantity" field (e.g. "1 cup (est.)").
 3. Estimate calories and macros (protein, carbs, fat in grams) per item using standard nutrition database values for common foods, including Indian/South Asian dishes.
 4. Set total_calories, total_protein_g, total_carbs_g, and total_fat_g to the sum of the corresponding values across all items.
 5. Write one short, single-sentence health tip relevant to this specific meal in "note".
+6. If a photo is provided but no food is clearly visible in it, return a single item with food "Unclear photo", quantity "n/a", all numeric fields 0, and a note asking the user to retake the photo or describe the meal in text instead - never fail silently.
 
 Respond with ONLY raw JSON matching the required schema - no markdown code fences, no backticks, no explanations, no text outside the JSON object.`
 
@@ -144,21 +145,17 @@ function isValidMealPayload(data) {
 }
 
 /**
- * Sends a plain-language meal description to Gemini and returns a
- * validated `{ items, total_calories, total_protein_g, total_carbs_g,
- * total_fat_g, note }` object. Totals are recomputed from the item list
- * client-side so they always add up, regardless of the model's own math.
+ * Shared core: sends `parts` (a string, or an array of strings/Parts) to
+ * Gemini and returns a validated `{ items, total_calories, total_protein_g,
+ * total_carbs_g, total_fat_g, note }` object. Totals are recomputed from the
+ * item list client-side so they always add up, regardless of the model's
+ * own math.
  */
-export async function analyzeMeal(description) {
-  const trimmed = description?.trim()
-  if (!trimmed) {
-    throw new Error('Please describe what you ate before analyzing.')
-  }
-
+async function runAnalysis(parts) {
   let raw
   try {
     const model = await getMealModel()
-    const result = await model.generateContent(trimmed)
+    const result = await model.generateContent(parts)
     raw = result.response.text()
   } catch (error) {
     throw friendlyAiError(error)
@@ -196,4 +193,28 @@ export async function analyzeMeal(description) {
         ? parsed.note
         : 'Try to balance this meal with some vegetables or fiber.',
   }
+}
+
+/** Sends a plain-language meal description to Gemini. See `runAnalysis`. */
+export async function analyzeMeal(description) {
+  const trimmed = description?.trim()
+  if (!trimmed) {
+    throw new Error('Please describe what you ate before analyzing.')
+  }
+  return runAnalysis(trimmed)
+}
+
+/**
+ * Sends a photo of a meal to Gemini (multimodal), with an optional caption.
+ * `imageBase64` must be a bare base64 string (no `data:` prefix) - see
+ * `utils/imageCompress.js`. See `runAnalysis` for the return shape.
+ */
+export async function analyzeMealPhoto(imageBase64, mimeType, caption = '') {
+  if (!imageBase64) {
+    throw new Error('Please attach a photo before analyzing.')
+  }
+  const parts = []
+  if (caption?.trim()) parts.push(caption.trim())
+  parts.push({ inlineData: { mimeType, data: imageBase64 } })
+  return runAnalysis(parts)
 }

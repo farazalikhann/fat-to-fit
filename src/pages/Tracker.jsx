@@ -3,11 +3,17 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import DailyDiary from '../components/tracker/DailyDiary'
 import WeeklyChart from '../components/tracker/WeeklyChart'
+import ProfileCard from '../components/tracker/ProfileCard'
 import MealAnalyzer from '../calculators/MealAnalyzer'
 import { IconGoogle } from '../components/shared/Icons'
 import Spinner from '../components/shared/Spinner'
 import { getDateKey, DAY_LABELS } from '../utils/dateKeys'
 import './Tracker.css'
+
+// Mirrors firebase/profile.js's DEFAULT_PROFILE - duplicated here (rather
+// than statically importing that module) so this file stays Firebase-free
+// at the top level, consistent with everything else in this lazy-loaded page.
+const DEFAULT_PROFILE = { dailyGoal: 2000, heightCm: null, weightKg: null }
 
 export default function Tracker() {
   const { user, authReady, signIn } = useAuth()
@@ -111,6 +117,7 @@ function buildTrackerData(entries) {
 
 function TrackerDashboard({ user }) {
   const [entries, setEntries] = useState([])
+  const [profile, setProfile] = useState(DEFAULT_PROFILE)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -137,6 +144,27 @@ function TrackerDashboard({ user }) {
     }
   }, [user.uid])
 
+  useEffect(() => {
+    let unsubscribe = () => {}
+    let cancelled = false
+
+    import('../firebase/profile')
+      .then(({ subscribeToProfile }) => {
+        if (cancelled) return
+        unsubscribe = subscribeToProfile(
+          user.uid,
+          (data) => setProfile(data),
+          (err) => console.error('[Tracker] profile load failed:', err.message),
+        )
+      })
+      .catch((err) => console.error('[Tracker] profile load failed:', err.message))
+
+    return () => {
+      cancelled = true
+      unsubscribe()
+    }
+  }, [user.uid])
+
   const { todayEntries, todayTotal, chartDays } = useMemo(() => buildTrackerData(entries), [entries])
 
   const handleAddManual = async (food, calories) => {
@@ -149,6 +177,11 @@ function TrackerDashboard({ user }) {
     await deleteEntry(user.uid, entryId)
   }
 
+  const handleSaveProfile = async (data) => {
+    const { saveProfile } = await import('../firebase/profile')
+    await saveProfile(user.uid, data)
+  }
+
   return (
     <div className="container tracker-page">
       <div className="tracker-header">
@@ -157,6 +190,8 @@ function TrackerDashboard({ user }) {
       </div>
 
       {error && <p className="tracker-page__error">{error}</p>}
+
+      <ProfileCard user={user} profile={profile} todayTotal={todayTotal} onSave={handleSaveProfile} />
 
       <div className="tracker-grid">
         <div className="tracker-grid__main">

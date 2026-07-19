@@ -107,3 +107,16 @@ export const IconNotebook = (p) => (
     <path d="M8 8h8M8 12h8M8 16h5" />
   </svg>
 )
+
+export const IconCamera = (p) => (
+  <svg viewBox="0 0 24 24" width="17" height="17" {...common} {...p}>
+    <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1-2h7l1 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5Z" />
+    <circle cx="12" cy="12.5" r="3.3" />
+  </svg>
+)
+
+export const IconClose = (p) => (
+  <svg viewBox="0 0 24 24" width="14" height="14" {...common} {...p}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </svg>
+)

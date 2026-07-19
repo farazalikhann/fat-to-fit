@@ -1,8 +1,4 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
-import { isSupported, getAnalytics } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -26,19 +22,8 @@ if (missingKeys.length) {
 // Guard against "Firebase App named '[DEFAULT]' already exists" during Vite HMR.
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
-
-// Analytics only works in a real browser (not SSR, not every test/embedded
-// environment), so it's initialized lazily and may stay null.
-export let analytics = null
-if (typeof window !== 'undefined') {
-  isSupported()
-    .then((supported) => {
-      if (supported) analytics = getAnalytics(app)
-    })
-    .catch(() => {
-      /* analytics unsupported in this environment - safe to ignore */
-    })
-}
+// NOTE: this file intentionally initializes ONLY the core app. Each product
+// SDK (auth, firestore, storage, ai, analytics) is initialized inside its
+// own module instead of here, so that importing e.g. ai.js doesn't drag the
+// Auth/Firestore/Storage SDKs into the same bundle chunk - each feature
+// only pays for the Firebase services it actually uses.

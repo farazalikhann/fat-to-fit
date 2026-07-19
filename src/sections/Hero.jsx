@@ -41,8 +41,8 @@ export default function Hero() {
           </div>
           <div className="hero__trust">
             <div>
-              <strong>6</strong>
-              <span>calculators</span>
+              <strong>7</strong>
+              <span>tools</span>
             </div>
             <div>
               <strong>0</strong>

@@ -1,4 +1,5 @@
 import {
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -6,8 +7,9 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { auth } from './config'
+import { app } from './config'
 
+export const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider()
 
 const ERROR_MESSAGES = {

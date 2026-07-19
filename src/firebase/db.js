@@ -1,5 +1,16 @@
-import { collection, doc, addDoc, getDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
-import { db } from './config'
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+} from 'firebase/firestore'
+import { app } from './config'
+
+export const db = getFirestore(app)
 
 /** Adds a new document to `collectionPath` with an auto-generated ID. Returns the new doc's ID. */
 export async function addDocument(collectionPath, data) {

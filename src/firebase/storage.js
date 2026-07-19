@@ -1,5 +1,7 @@
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { storage } from './config'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { app } from './config'
+
+export const storage = getStorage(app)
 
 /** Uploads a File/Blob to `path` (e.g. `users/${uid}/avatar.png`). Returns the storage path. */
 export async function uploadFile(path, file) {

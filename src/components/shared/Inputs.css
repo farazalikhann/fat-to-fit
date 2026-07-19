@@ -54,6 +54,37 @@
   margin: 0;
 }
 
+.textarea-input {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 18px 6px 18px 6px;
+  padding: 4px;
+  transition: box-shadow 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+
+.textarea-input:focus-within {
+  border-color: var(--lime-2);
+  box-shadow: 0 0 0 4px rgba(197, 245, 71, 0.35);
+}
+
+.textarea-input textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  resize: vertical;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  padding: 14px;
+}
+
+.textarea-input textarea::placeholder {
+  color: var(--sage);
+  opacity: 0.7;
+}
+
 .number-input__suffix {
   font-size: 14px;
   font-weight: 600;

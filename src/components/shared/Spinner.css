@@ -1,0 +1,19 @@
+.spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2.5px solid rgba(20, 40, 29, 0.15);
+  border-top-color: currentColor;
+  animation: spinner-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.6s;
+  }
+}
+
+@keyframes spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -10,7 +10,8 @@ import BMICalculator from '../calculators/BMICalculator'
 import IdealWeightCalculator from '../calculators/IdealWeightCalculator'
 import WaterIntakeCalculator from '../calculators/WaterIntakeCalculator'
 import BodyFatCalculator from '../calculators/BodyFatCalculator'
-import { IconFlame, IconMacro, IconScale, IconRuler, IconDroplet, IconBody } from '../components/shared/Icons'
+import MealAnalyzer from '../calculators/MealAnalyzer'
+import { IconFlame, IconMacro, IconScale, IconRuler, IconDroplet, IconBody, IconSparkle } from '../components/shared/Icons'
 import './ToolsSection.css'
 
 const TABS = [
@@ -20,6 +21,7 @@ const TABS = [
   { id: 'ideal', label: 'Ideal Weight', icon: <IconRuler />, Component: IdealWeightCalculator },
   { id: 'water', label: 'Water', icon: <IconDroplet />, Component: WaterIntakeCalculator },
   { id: 'bodyfat', label: 'Body Fat', icon: <IconBody />, Component: BodyFatCalculator },
+  { id: 'meal-ai', label: 'AI Meal', icon: <IconSparkle />, Component: MealAnalyzer },
 ]
 
 export default function ToolsSection() {
@@ -31,7 +33,7 @@ export default function ToolsSection() {
       <div className="container">
         <div className="tools__header">
           <span className="tools__eyebrow">The toolkit</span>
-          <h2>Six calculators. One set of numbers.</h2>
+          <h2>Seven tools. One set of numbers.</h2>
         </div>
 
         <div className="tools__layout">

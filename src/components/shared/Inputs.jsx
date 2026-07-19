@@ -27,6 +27,20 @@ export function NumberInput({ value, onChange, suffix, min, max, step = 1, ...re
   )
 }
 
+export function TextAreaInput({ value, onChange, placeholder, rows = 3, ...rest }) {
+  return (
+    <div className="textarea-input">
+      <textarea
+        value={value}
+        placeholder={placeholder}
+        rows={rows}
+        onChange={(e) => onChange(e.target.value)}
+        {...rest}
+      />
+    </div>
+  )
+}
+
 export function SegmentedToggle({ options, value, onChange }) {
   return (
     <div className="segmented" role="tablist">

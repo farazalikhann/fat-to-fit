@@ -1,0 +1,72 @@
+.weekly-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 220px;
+  padding-top: 10px;
+}
+
+.weekly-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.weekly-chart__value {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sage);
+  height: 18px;
+}
+
+.weekly-chart__track {
+  flex: 1;
+  width: 100%;
+  max-width: 40px;
+  display: flex;
+  align-items: flex-end;
+  background: var(--card-deep);
+  border-radius: 10px 10px 4px 4px;
+  overflow: hidden;
+}
+
+.weekly-chart__bar {
+  width: 100%;
+  background: var(--sage);
+  border-radius: 10px 10px 4px 4px;
+}
+
+.weekly-chart__col.is-today .weekly-chart__bar {
+  background: var(--lime-2);
+}
+
+.weekly-chart__col.is-today .weekly-chart__value {
+  color: var(--forest);
+}
+
+.weekly-chart__label {
+  margin-top: 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sage);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.weekly-chart__col.is-today .weekly-chart__label {
+  color: var(--forest);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .weekly-chart {
+    height: 170px;
+    gap: 6px;
+  }
+  .weekly-chart__label {
+    font-size: 10px;
+  }
+}

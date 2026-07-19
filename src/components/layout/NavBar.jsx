@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import ThemeToggle from '../shared/ThemeToggle'
+import AuthControl from '../shared/AuthControl'
 import './NavBar.css'
 
 export default function NavBar() {
@@ -39,6 +40,7 @@ export default function NavBar() {
           <a href="#tools" onClick={goToTools}>
             Calculators
           </a>
+          <Link to="/tracker">My Tracker</Link>
           <Link to="/about">About</Link>
           <Link to="/privacy">Privacy</Link>
         </nav>
@@ -46,6 +48,8 @@ export default function NavBar() {
         <a href="#tools" className="btn btn-primary nav__cta" onClick={goToTools}>
           Get your numbers
         </a>
+
+        <AuthControl className="nav__auth" />
 
         <ThemeToggle className="nav__theme-toggle" />
 
@@ -71,12 +75,18 @@ export default function NavBar() {
             <a href="#tools" onClick={goToTools}>
               Calculators
             </a>
+            <Link to="/tracker" onClick={() => setOpen(false)}>
+              My Tracker
+            </Link>
             <Link to="/about" onClick={() => setOpen(false)}>
               About
             </Link>
             <Link to="/privacy" onClick={() => setOpen(false)}>
               Privacy
             </Link>
+            <div className="nav__mobile-auth">
+              <AuthControl />
+            </div>
           </motion.nav>
         )}
       </AnimatePresence>

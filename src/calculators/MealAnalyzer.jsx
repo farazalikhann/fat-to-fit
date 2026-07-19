@@ -5,18 +5,24 @@ import Spinner from '../components/shared/Spinner'
 import NumberCountUp from '../components/shared/NumberCountUp'
 import { IconSparkle } from '../components/shared/Icons'
 import { analyzeMeal } from '../firebase/ai'
+import { useAuth } from '../context/AuthContext'
 import './MealAnalyzer.css'
 
 export default function MealAnalyzer() {
+  const { user } = useAuth()
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState('idle') // idle | loading | error | success
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
+  const [saveError, setSaveError] = useState('')
 
   const handleAnalyze = async () => {
     if (status === 'loading') return
     setStatus('loading')
     setError('')
+    setSaveState('idle')
+    setSaveError('')
     try {
       const data = await analyzeMeal(description)
       setResult(data)
@@ -24,6 +30,27 @@ export default function MealAnalyzer() {
     } catch (err) {
       setError(err.message)
       setStatus('error')
+    }
+  }
+
+  const handleSaveToDiary = async () => {
+    if (!user || !result || saveState === 'saving') return
+    setSaveState('saving')
+    setSaveError('')
+    try {
+      const { addEntry } = await import('../firebase/entries')
+      await addEntry(user.uid, {
+        food: description.trim(),
+        calories: result.total_calories,
+        protein_g: result.total_protein_g,
+        carbs_g: result.total_carbs_g,
+        fat_g: result.total_fat_g,
+        source: 'ai',
+      })
+      setSaveState('saved')
+    } catch (err) {
+      setSaveState('error')
+      setSaveError(err.message)
     }
   }
 
@@ -159,6 +186,36 @@ export default function MealAnalyzer() {
             </div>
 
             <p className="meal-disclaimer">AI estimates — actual values may vary.</p>
+
+            {user && (
+              <div className="meal-save">
+                <button
+                  type="button"
+                  className="btn btn-ghost meal-save__btn"
+                  onClick={handleSaveToDiary}
+                  disabled={saveState === 'saving' || saveState === 'saved'}
+                >
+                  {saveState === 'saved'
+                    ? "✓ Saved to today's diary"
+                    : saveState === 'saving'
+                      ? 'Saving...'
+                      : "Save to today's diary"}
+                </button>
+                <AnimatePresence>
+                  {saveState === 'error' && (
+                    <motion.p
+                      className="meal-save__error"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      role="alert"
+                    >
+                      {saveError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         )}
       </motion.div>

@@ -1,6 +1,6 @@
 .meal-grid {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 28px;
   align-items: start;
 }
@@ -205,6 +205,25 @@
   font-size: 11.5px;
   color: var(--sage);
   opacity: 0.8;
+  text-align: center;
+}
+
+.meal-save {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.meal-save__btn {
+  font-size: 13px;
+  padding: 10px 20px;
+}
+
+.meal-save__error {
+  font-size: 12.5px;
+  color: var(--coral);
+  font-weight: 600;
   text-align: center;
 }
 

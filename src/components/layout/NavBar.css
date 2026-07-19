@@ -54,8 +54,16 @@
   text-decoration: none;
 }
 
+.nav__auth {
+  margin-left: 4px;
+}
+
 .nav__theme-toggle {
   margin-left: 4px;
+}
+
+.nav__mobile-auth {
+  padding: 16px 0 4px;
 }
 
 .nav__burger {

@@ -20,14 +20,14 @@
 
 .content-block {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 140px minmax(0, 1fr);
   gap: 40px;
   padding: 44px 0;
   border-top: 1px solid var(--line);
 }
 
 .content-block--reverse {
-  grid-template-columns: 1fr 140px;
+  grid-template-columns: minmax(0, 1fr) 140px;
 }
 
 .content-block--reverse .content-block__body {

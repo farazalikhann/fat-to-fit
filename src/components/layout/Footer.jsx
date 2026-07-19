@@ -21,6 +21,7 @@ export default function Footer() {
 
           <nav className="footer__links">
             <a href="#tools">Calculators</a>
+            <Link to="/tracker">My Tracker</Link>
             <Link to="/about">About</Link>
             <Link to="/privacy">Privacy Policy</Link>
           </nav>
@@ -35,6 +36,7 @@ export default function Footer() {
 
         <p className="footer__copy">
           © {new Date().getFullYear()} Sprout. Built with care for people chasing real goals.
+          <span className="footer__byline"> · Made by Faraz Ali Khan</span>
         </p>
       </div>
     </footer>

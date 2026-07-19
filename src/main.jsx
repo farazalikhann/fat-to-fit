@@ -5,14 +5,17 @@ import './index.css'
 import App from './App.jsx'
 import { StatsProvider } from './context/StatsContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { AuthProvider } from './context/AuthContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <ThemeProvider>
-        <StatsProvider>
-          <App />
-        </StatsProvider>
+        <AuthProvider>
+          <StatsProvider>
+            <App />
+          </StatsProvider>
+        </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

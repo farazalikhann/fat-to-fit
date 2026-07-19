@@ -29,14 +29,18 @@ RULES:
 5. "note" is exactly one short, single-sentence, meal-specific health tip.
 6. If a photo is provided but no food is clearly visible, return exactly one item: food "Unclear photo", quantity "n/a", all four numeric fields 0, and a "note" asking the user to retake the photo or describe the meal in text instead - never fail silently, never return an empty items array.
 7. "items" must never be empty.
-8. Output the JSON object only. Nothing else.`
+8. Never respond with anything other than the JSON object - no safety notices, no meta-commentary, no partial answers. If you cannot analyze the input for any reason, use the "Unclear photo" fallback in rule 6 instead of any other response shape.
+9. Output the JSON object only. Nothing else.`
 
 // Tried in order. The router is tried first (it auto-selects a suitable
 // free model, including vision-capable ones when an image is present), then
-// a couple of concrete free models as a hedge against the router or any
-// single free model being temporarily unavailable/deprecated - the exact
-// same class of problem this project has already hit once with Gemini's
-// free tier ("gemini-2.5-flash" was retired without notice).
+// a couple of concrete free models as a hedge against the router - or any
+// single free model - being temporarily unavailable, deprecated, or (as
+// found in production) occasionally ignoring the JSON-only instruction and
+// returning something else entirely (e.g. a bare safety-classifier string).
+// Response *content* is validated below, not just the HTTP status, so a
+// model that returns garbage with a 200 OK still triggers the same
+// move-to-the-next-model fallback as a real HTTP error would.
 const MODEL_CHAIN = [
   'openrouter/free',
   'nvidia/nemotron-nano-12b-v2-vl:free',
@@ -45,7 +49,7 @@ const MODEL_CHAIN = [
 
 const MAX_RETRIES_PER_MODEL = 1
 const RETRY_DELAY_MS = 500
-const UPSTREAM_TIMEOUT_MS = 25000
+const UPSTREAM_TIMEOUT_MS = 18000
 
 // Only these origins may call this Worker - prevents other sites from
 // riding on your OpenRouter free-tier quota. Add your own dev/prod origins
@@ -82,6 +86,36 @@ function buildUserContent(description, image) {
   return parts
 }
 
+// The proxy's response_format:json_object should prevent this, but strip
+// markdown fences defensively in case a free model ever wraps its output in
+// them anyway.
+function stripCodeFence(text) {
+  const trimmed = text.trim()
+  const match = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)
+  return match ? match[1] : trimmed
+}
+
+function isValidMealPayload(data) {
+  if (!data || typeof data !== 'object' || !Array.isArray(data.items) || data.items.length === 0) {
+    return false
+  }
+  return data.items.every(
+    (item) =>
+      item &&
+      typeof item.food === 'string' &&
+      typeof item.quantity === 'string' &&
+      typeof item.calories === 'number' &&
+      typeof item.protein_g === 'number' &&
+      typeof item.carbs_g === 'number' &&
+      typeof item.fat_g === 'number',
+  )
+}
+
+// Calls OpenRouter and returns the validated raw JSON text on success. Throws
+// on any problem - HTTP-level (rate limit, auth, server error) or content-
+// level (empty response, unparseable text, wrong shape) - so the caller can
+// treat "model responded but with garbage" exactly like a real HTTP failure
+// and move on to the next model in the chain.
 async function callOpenRouter(model, userContent, apiKey, signal) {
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -111,7 +145,29 @@ async function callOpenRouter(model, userContent, apiKey, signal) {
     throw error
   }
 
-  return response.json()
+  const data = await response.json()
+  const text = data?.choices?.[0]?.message?.content
+
+  if (typeof text !== 'string' || !text.trim()) {
+    throw Object.assign(new Error(`${model} returned empty content`), { code: 'bad-content' })
+  }
+
+  let parsed
+  try {
+    parsed = JSON.parse(stripCodeFence(text))
+  } catch {
+    throw Object.assign(new Error(`${model} did not return valid JSON: ${text.slice(0, 200)}`), {
+      code: 'bad-content',
+    })
+  }
+
+  if (!isValidMealPayload(parsed)) {
+    throw Object.assign(new Error(`${model} returned JSON missing expected fields`), {
+      code: 'bad-content',
+    })
+  }
+
+  return text
 }
 
 function sleep(ms) {
@@ -119,11 +175,13 @@ function sleep(ms) {
 }
 
 // Only retry on errors that are plausibly transient (rate limit, upstream
-// hiccup, timeout) - never retry a 400 (bad request shape) or 401/403 (auth),
-// since those will fail identically every time and just waste the retry
-// budget before falling through to the next model.
+// hiccup, timeout) or fixable by trying a different model ("bad-content" -
+// a model that ignored the JSON-only instruction). Never retry a 400 (bad
+// request shape) or 401/403 (auth), since those fail identically every time
+// and just waste the retry budget before falling through.
 function isRetryable(error) {
   if (error?.name === 'AbortError') return true
+  if (error?.code === 'bad-content') return true
   if (typeof error?.status === 'number') return error.status === 429 || error.status >= 500
   return true // network-level failure (no status at all)
 }
@@ -136,15 +194,21 @@ async function analyzeWithFallback(userContent, apiKey) {
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS)
       try {
-        const result = await callOpenRouter(model, userContent, apiKey, controller.signal)
+        const text = await callOpenRouter(model, userContent, apiKey, controller.signal)
         clearTimeout(timeout)
-        return { result, modelUsed: model }
+        return { text, modelUsed: model }
       } catch (error) {
         clearTimeout(timeout)
         lastError = error
         // A bad/missing API key fails identically for every model - no
         // point burning the rest of the fallback chain on it.
         if (error?.status === 401 || error?.status === 403) throw error
+        // A model that ignored the JSON-only instruction is likely to do so
+        // again at the same temperature - move straight to the next (different)
+        // model instead of spending a retry + delay on the same one. This
+        // keeps the worst case fast enough to fit inside the client's own
+        // timeout budget.
+        if (error?.code === 'bad-content') break
         if (!isRetryable(error) || attempt === MAX_RETRIES_PER_MODEL) break
         await sleep(RETRY_DELAY_MS * (attempt + 1))
       }
@@ -191,25 +255,24 @@ export default {
 
     try {
       const userContent = buildUserContent(description, image)
-      const { result, modelUsed } = await analyzeWithFallback(userContent, env.OPENROUTER_API_KEY)
-      const text = result?.choices?.[0]?.message?.content
-      if (typeof text !== 'string' || !text.trim()) {
-        return jsonResponse({ error: 'empty-upstream-response' }, 502, origin)
-      }
+      const { text, modelUsed } = await analyzeWithFallback(userContent, env.OPENROUTER_API_KEY)
       return jsonResponse({ text, modelUsed }, 200, origin)
     } catch (error) {
-      const status = typeof error?.status === 'number' ? error.status : 502
+      const status = typeof error?.status === 'number' ? error.status : null
       const code =
-        status === 429
-          ? 'rate-limited'
-          : error?.name === 'AbortError'
-            ? 'upstream-timeout'
-            : status >= 500
-              ? 'upstream-error'
-              : status === 401 || status === 403
-                ? 'auth-error'
-                : 'upstream-error'
-      return jsonResponse({ error: code, status }, status >= 400 && status < 600 ? status : 502, origin)
+        error?.code === 'bad-content'
+          ? 'invalid-model-response'
+          : status === 429
+            ? 'rate-limited'
+            : error?.name === 'AbortError'
+              ? 'upstream-timeout'
+              : status >= 500
+                ? 'upstream-error'
+                : status === 401 || status === 403
+                  ? 'auth-error'
+                  : 'upstream-error'
+      const httpStatus = status && status >= 400 && status < 600 ? status : 502
+      return jsonResponse({ error: code, status: httpStatus }, httpStatus, origin)
     }
   },
 }

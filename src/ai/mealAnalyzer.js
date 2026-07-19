@@ -5,7 +5,10 @@
 // owns the CLIENT-facing retry policy and user-facing error messages.
 
 const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL
-const REQUEST_TIMEOUT_MS = 30000
+// Generous enough to cover the Worker's own worst-case model-fallback chain
+// (up to 3 models, each with its own upstream timeout) without the client
+// giving up first and masking a request the Worker would have recovered.
+const REQUEST_TIMEOUT_MS = 60000
 const MAX_RETRIES = 2
 const RETRY_BASE_DELAY_MS = 700
 
@@ -20,6 +23,8 @@ const ERROR_MESSAGES = {
   'upstream-timeout': 'The AI service took too long to respond. Please try again.',
   'upstream-error': 'The AI service is temporarily unavailable. Please try again shortly.',
   'empty-upstream-response': "The AI didn't return a result. Please try again.",
+  'invalid-model-response':
+    "The AI couldn't reliably analyze that - please try again, or describe the meal in text instead.",
   'method-not-allowed': 'Something is misconfigured on this deployment. Please let the site owner know.',
   'invalid-request-body': 'Something went wrong preparing that request. Please try again.',
   'empty-request': 'Please describe what you ate or attach a photo before analyzing.',
@@ -143,11 +148,11 @@ async function runAnalysis(body) {
   try {
     parsed = JSON.parse(stripCodeFence(raw))
   } catch {
-    throw new Error("The AI response wasn't valid JSON. Please try again.")
+    throw new Error("The AI couldn't reliably analyze that - please try again, or describe the meal in text instead.")
   }
 
   if (!isValidMealPayload(parsed)) {
-    throw new Error('The AI response was missing expected fields. Please try again.')
+    throw new Error("The AI couldn't reliably analyze that - please try again, or describe the meal in text instead.")
   }
 
   const totals = parsed.items.reduce(

@@ -1,3 +1,10 @@
+.pdf-btn-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
 .pdf-btn {
   display: inline-flex;
   align-items: center;
@@ -22,4 +29,19 @@
 .pdf-btn:disabled {
   opacity: 0.7;
   cursor: default;
+}
+
+.pdf-btn__notice {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: var(--forest-deep, #0f2a1f);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 10px 12px;
+  border-radius: 12px 4px 12px 12px;
+  z-index: 20;
 }

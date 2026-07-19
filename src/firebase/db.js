@@ -1,5 +1,7 @@
 import {
-  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   collection,
   doc,
   addDoc,
@@ -10,7 +12,15 @@ import {
 } from 'firebase/firestore'
 import { app } from './config'
 
-export const db = getFirestore(app)
+// Persistent (IndexedDB-backed) local cache so My Tracker's entries/profile/
+// dailyTotals keep showing their last-synced values when opened offline (as
+// an installed PWA or otherwise) - onSnapshot listeners resolve from this
+// cache immediately and update again once a real connection comes back.
+// Multi-tab manager since the installed PWA and a regular browser tab can
+// both be open against the same account at once.
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+})
 
 /** Adds a new document to `collectionPath` with an auto-generated ID. Returns the new doc's ID. */
 export async function addDocument(collectionPath, data) {

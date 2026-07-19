@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import NavBar from './components/layout/NavBar'
 import Footer from './components/layout/Footer'
 import BottomNav from './components/layout/BottomNav'
+import OfflineBanner from './components/layout/OfflineBanner'
 import Home from './pages/Home'
 import About from './pages/About'
 import Privacy from './pages/Privacy'
@@ -18,6 +19,7 @@ function App() {
     <>
       <div className="grain-overlay" />
       <NavBar />
+      <OfflineBanner />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />

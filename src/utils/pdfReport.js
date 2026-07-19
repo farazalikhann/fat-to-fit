@@ -14,6 +14,7 @@ import {
   ACTIVITY_LEVELS,
 } from './calculations'
 import { cmToFtIn, kgToLbs, round } from './units'
+import { downloadOrOpenBlob } from './downloadBlob'
 
 const FOREST = [27, 67, 50]
 const LIME = [197, 245, 71]
@@ -180,7 +181,7 @@ export async function generatePdfReport(stats) {
     })
   }
 
-  doc.save('sprout-health-report.pdf')
+  return downloadOrOpenBlob(doc.output('blob'), 'sprout-health-report.pdf')
 }
 
 // `chartDays`: [{ dateKey, label, fullDate, isToday, total, entries }] oldest
@@ -284,5 +285,5 @@ export async function generateTrackerReport({ userName, chartDays }) {
     })
   }
 
-  doc.save('sprout-7-day-report.pdf')
+  return downloadOrOpenBlob(doc.output('blob'), 'sprout-7-day-report.pdf')
 }

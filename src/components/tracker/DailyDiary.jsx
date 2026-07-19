@@ -7,22 +7,29 @@ import './DailyDiary.css'
 export default function DailyDiary({ entries, total, onAddManual, onDelete }) {
   const [food, setFood] = useState('')
   const [calories, setCalories] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
   const [error, setError] = useState('')
 
+  // Deliberately does NOT disable the form/button while a save is in
+  // flight: each submission is captured and cleared immediately, so the
+  // user can add another entry right away instead of the field silently
+  // discarding whatever they typed next while the previous save (a real
+  // Firestore round trip, not instant) was still pending.
   const handleAdd = async (e) => {
     e.preventDefault()
-    if (!food.trim() || calories === '' || busy) return
-    setBusy(true)
+    const trimmedFood = food.trim()
+    if (!trimmedFood || calories === '') return
+    const caloriesValue = Number(calories)
+    setFood('')
+    setCalories('')
     setError('')
+    setPendingCount((n) => n + 1)
     try {
-      await onAddManual(food.trim(), Number(calories))
-      setFood('')
-      setCalories('')
+      await onAddManual(trimmedFood, caloriesValue)
     } catch (err) {
       setError(err.message)
     } finally {
-      setBusy(false)
+      setPendingCount((n) => n - 1)
     }
   }
 
@@ -54,10 +61,23 @@ export default function DailyDiary({ entries, total, onAddManual, onDelete }) {
           min="0"
           max="10000"
         />
-        <button type="submit" className="btn btn-primary daily-diary__add" disabled={busy}>
+        <button type="submit" className="btn btn-primary daily-diary__add">
           Add
         </button>
       </form>
+
+      <AnimatePresence>
+        {pendingCount > 0 && (
+          <motion.p
+            className="daily-diary__saving"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            Saving{pendingCount > 1 ? ` ${pendingCount} entries` : ''}...
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {error && (

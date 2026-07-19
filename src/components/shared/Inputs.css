@@ -4,6 +4,10 @@
   gap: 8px;
 }
 
+.field--full {
+  grid-column: 1 / -1;
+}
+
 .field__label {
   font-size: 13px;
   font-weight: 600;

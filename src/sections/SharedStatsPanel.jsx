@@ -43,7 +43,7 @@ export default function SharedStatsPanel({
           />
         </Field>
 
-        <Field label="Height">
+        <Field label="Height" full>
           <SegmentedToggle
             options={[
               { value: 'ft', label: 'ft / in' },
@@ -80,7 +80,7 @@ export default function SharedStatsPanel({
           )}
         </Field>
 
-        <Field label="Weight">
+        <Field label="Weight" full>
           <SegmentedToggle
             options={[
               { value: 'lbs', label: 'lbs' },

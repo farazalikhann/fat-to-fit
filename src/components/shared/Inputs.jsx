@@ -1,8 +1,8 @@
 import './Inputs.css'
 
-export function Field({ label, children, hint }) {
+export function Field({ label, children, hint, full = false }) {
   return (
-    <div className="field" role="group" aria-label={label}>
+    <div className={`field ${full ? 'field--full' : ''}`} role="group" aria-label={label}>
       <span className="field__label">{label}</span>
       {children}
       {hint ? <span className="field__hint">{hint}</span> : null}

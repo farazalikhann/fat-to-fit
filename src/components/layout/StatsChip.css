@@ -12,6 +12,7 @@
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
   max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   white-space: nowrap;
 }

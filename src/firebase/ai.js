@@ -107,7 +107,7 @@ function getMealModel() {
 
       const ai = getAI(app, { backend: new GoogleAIBackend() })
       return getGenerativeModel(ai, {
-        model: 'gemini-2.5-flash',
+        model: 'gemini-flash-latest',
         systemInstruction: SYSTEM_INSTRUCTION,
         generationConfig: {
           responseMimeType: 'application/json',

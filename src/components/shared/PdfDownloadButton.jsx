@@ -8,15 +8,15 @@ import './PdfDownloadButton.css'
 export default function PdfDownloadButton({ className = '' }) {
   const { stats } = useStats()
   const [busy, setBusy] = useState(false)
-  const [openedInTab, setOpenedInTab] = useState(false)
+  const [tabNotice, setTabNotice] = useState('')
 
   const handleClick = async () => {
     if (busy) return
     setBusy(true)
-    setOpenedInTab(false)
+    setTabNotice('')
     try {
       const result = await generatePdfReport(stats)
-      if (result?.method === 'tab') setOpenedInTab(true)
+      if (result?.method === 'tab') setTabNotice(result.message || 'PDF opened in a new tab.')
     } finally {
       setBusy(false)
     }
@@ -36,14 +36,14 @@ export default function PdfDownloadButton({ className = '' }) {
         {busy ? 'Preparing...' : 'Download PDF'}
       </motion.button>
       <AnimatePresence>
-        {openedInTab && (
+        {tabNotice && (
           <motion.p
             className="pdf-btn__notice"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            PDF opened in a new tab — tap Share → Save to Files to save it.
+            {tabNotice}
           </motion.p>
         )}
       </AnimatePresence>

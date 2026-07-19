@@ -2,10 +2,10 @@ const MAX_FILE_BYTES = 15 * 1024 * 1024 // 15MB, before compression
 
 /**
  * Resizes and re-encodes an image File client-side via canvas, so we never
- * upload a multi-megabyte camera photo to Gemini. Returns
- * `{ base64, mimeType, previewUrl }` - `base64` has no `data:` prefix (that's
- * what Firebase AI Logic's inlineData.data expects), `previewUrl` is a data
- * URL suitable for an <img src>.
+ * upload a multi-megabyte camera photo to the AI proxy. Returns
+ * `{ base64, mimeType, previewUrl }` - `base64` has no `data:` prefix (the AI
+ * proxy re-attaches it as a data URL before forwarding to OpenRouter),
+ * `previewUrl` is a data URL suitable for an <img src>.
  */
 export function compressImage(file, { maxDimension = 1024, quality = 0.82 } = {}) {
   return new Promise((resolve, reject) => {

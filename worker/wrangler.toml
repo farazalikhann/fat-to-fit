@@ -1,0 +1,7 @@
+name = "sprout-ai-proxy"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+# OPENROUTER_API_KEY is NOT set here - it must be added as a secret so it's
+# encrypted at rest and never appears in this file or in git:
+#   npx wrangler secret put OPENROUTER_API_KEY

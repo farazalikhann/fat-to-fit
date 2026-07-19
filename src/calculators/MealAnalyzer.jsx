@@ -4,7 +4,7 @@ import { TextAreaInput } from '../components/shared/Inputs'
 import Spinner from '../components/shared/Spinner'
 import NumberCountUp from '../components/shared/NumberCountUp'
 import { IconSparkle, IconCamera, IconClose } from '../components/shared/Icons'
-import { analyzeMeal, analyzeMealPhoto } from '../firebase/ai'
+import { analyzeMeal, analyzeMealPhoto } from '../ai/mealAnalyzer'
 import { compressImage } from '../utils/imageCompress'
 import { useAuth } from '../context/AuthContext'
 import './MealAnalyzer.css'
@@ -116,7 +116,7 @@ export default function MealAnalyzer() {
       >
         <h4>AI Meal Analyzer</h4>
         <p className="meal-inputs__hint">
-          Describe what you ate, attach a photo, or both - Gemini will estimate calories and macros.
+          Describe what you ate, attach a photo, or both - AI will estimate calories and macros.
         </p>
 
         <TextAreaInput

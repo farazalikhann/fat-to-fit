@@ -32,9 +32,9 @@ export default function Home() {
     <>
       <WebAppSchema />
       <Hero />
+      <ToolsSection />
       <IntroText />
       <QuickAccess />
-      <ToolsSection />
       <ContentSEO />
       <FAQ />
     </>

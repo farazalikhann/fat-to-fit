@@ -91,7 +91,14 @@ export default function AuthControl({ className = '', variant = 'menu', onNaviga
   }
 
   const avatar = user.photoURL ? (
-    <img className="auth-control__avatar" src={user.photoURL} alt="" referrerPolicy="no-referrer" />
+    <img
+      className="auth-control__avatar"
+      src={user.photoURL}
+      alt=""
+      referrerPolicy="no-referrer"
+      width={24}
+      height={24}
+    />
   ) : (
     <span className="auth-control__avatar auth-control__avatar--initial">
       {(user.displayName || user.email || '?').charAt(0).toUpperCase()}

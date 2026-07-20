@@ -8,17 +8,19 @@ export default function SharedStatsPanel({
   eyebrow = 'Your stats',
   title = 'Enter once, use everywhere',
   id = 'shared-stats',
+  headingLevel = 'h3',
 }) {
   const { stats, patch } = useStats()
   const { ft, inch } = cmToFtIn(stats.heightCm)
   const weightDisplay =
     stats.weightUnit === 'kg' ? round(stats.weightKg, 1) : round(kgToLbs(stats.weightKg), 1)
+  const Heading = headingLevel
 
   return (
     <div id={id} className="stats-panel organic-3">
       <div className="stats-panel__head">
         <span className="stats-panel__eyebrow">{eyebrow}</span>
-        <h3>{title}</h3>
+        <Heading className="stats-panel__title">{title}</Heading>
       </div>
 
       <div className="stats-panel__grid">

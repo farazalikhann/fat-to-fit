@@ -21,6 +21,8 @@ export default function Footer() {
 
           <nav className="footer__links">
             <a href="#tools">Calculators</a>
+            <Link to="/?tool=calories#tools">Free Calorie Calculator</Link>
+            <Link to="/?tool=bmi#tools">BMI Calculator</Link>
             <Link to="/tracker">My Tracker</Link>
             <Link to="/about">About</Link>
             <Link to="/privacy">Privacy Policy</Link>

@@ -67,6 +67,8 @@ export default function ProfileCard({ user, profile, todayTotal, onSave }) {
               src={user.photoURL}
               alt=""
               referrerPolicy="no-referrer"
+              width={52}
+              height={52}
             />
           ) : (
             <span className="profile-card__avatar profile-card__avatar--initial">
@@ -74,7 +76,7 @@ export default function ProfileCard({ user, profile, todayTotal, onSave }) {
             </span>
           )}
           <div>
-            <h3>{user.displayName || 'Your profile'}</h3>
+            <h2>{user.displayName || 'Your profile'}</h2>
             {!editing && (
               <p className="profile-card__meta">
                 Goal {profile.dailyGoal} kcal · Height {heightDisplay} · Weight {weightDisplay}

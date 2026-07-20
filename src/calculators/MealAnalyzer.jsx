@@ -146,7 +146,7 @@ export default function MealAnalyzer() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.25 }}
             >
-              <img src={photo.previewUrl} alt="Meal preview" />
+              <img src={photo.previewUrl} alt="Meal preview" width={88} height={88} />
               <button
                 type="button"
                 className="meal-photo-preview__remove"

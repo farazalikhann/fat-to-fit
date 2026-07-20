@@ -36,7 +36,7 @@ export default function DailyDiary({ entries, total, onAddManual, onDelete }) {
   return (
     <div className="daily-diary organic-2">
       <div className="daily-diary__head">
-        <h3>Today</h3>
+        <h2>Today</h2>
         <div className="daily-diary__total">
           <NumberCountUp value={total} />
           <span>kcal</span>

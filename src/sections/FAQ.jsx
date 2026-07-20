@@ -5,6 +5,10 @@ import './FAQ.css'
 
 const FAQS = [
   {
+    q: 'How many calories should I eat per day?',
+    a: 'Your daily calorie needs depend on your age, height, weight, gender, and activity level. Enter your stats once and our free TDEE calculator instantly shows your maintenance calories, plus targets for losing or gaining weight at a safe, sustainable rate.',
+  },
+  {
     q: 'How accurate is this calorie calculator?',
     a: "This calculator uses the Mifflin-St Jeor equation, which research shows is accurate for about 82% of people within 10% of their true measured metabolic rate — making it the most reliable equation available without lab testing (like indirect calorimetry). Individual results can still vary with muscle mass, genetics, medications, and hormones, so treat the number as a well-informed starting point, not a lab result.",
   },
@@ -27,6 +31,14 @@ const FAQS = [
   {
     q: 'How much water should I drink per day?',
     a: "A common starting point is roughly 0.5–0.7 fl oz per pound of body weight per day, adjusted upward for exercise, heat, or high altitude. Our water intake calculator uses your body weight and activity level to give a personalized daily target, but thirst, urine color, and your doctor's guidance are the best day-to-day indicators.",
+  },
+  {
+    q: 'How accurate is the AI meal photo scanner?',
+    a: "The AI Meal Analyzer estimates calories and macros from a food photo or a plain-text description using standard nutrition database values, including common Indian and South Asian dishes. It's a fast, convenient estimate for everyday tracking — genuinely useful for spotting patterns over time — but like any photo-based estimate it can vary from a nutrition label or a registered dietitian's assessment, especially for mixed dishes or unusual portion sizes.",
+  },
+  {
+    q: 'Is this calculator free to use?',
+    a: 'Yes — every calculator on Sprout (calories, TDEE, BMI, macros, ideal weight, water intake, and body fat) is completely free in the USA and everywhere else, with no signup, subscription, or hidden fees. Creating a free account is optional and only needed if you want to save your meal history and daily progress across visits.',
   },
 ]
 

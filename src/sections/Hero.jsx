@@ -23,9 +23,9 @@ export default function Hero() {
         >
           <span className="hero__eyebrow">Free · science-backed · takes 30 seconds</span>
           <h1 className="hero__title">
-            Know your numbers.
+            Free Calorie Calculator.
             <br />
-            <span className="hero__title--accent">Reach your goals.</span>
+            <span className="hero__title--accent">Know your numbers, reach your goals.</span>
           </h1>
           <p className="hero__sub">
             The Mifflin-St Jeor calorie calculator, TDEE, macros, BMI, ideal weight, water

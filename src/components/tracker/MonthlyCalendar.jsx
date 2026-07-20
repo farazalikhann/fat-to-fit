@@ -92,9 +92,9 @@ export default function MonthlyCalendar({ uid, dailyGoal }) {
   return (
     <div className="monthly-cal">
       <div className="monthly-cal__head">
-        <h3>
+        <h2>
           {MONTH_LABELS[viewMonth]} {viewYear}
-        </h3>
+        </h2>
         <div className="monthly-cal__nav">
           <button type="button" onClick={handlePrev} aria-label="Previous month">
             <IconChevronLeft />

@@ -1,11 +1,14 @@
-import { useEffect } from 'react'
+import { useSeo } from '../utils/seo'
 import Reveal from '../components/shared/Reveal'
 import './StaticPage.css'
 
 export default function Privacy() {
-  useEffect(() => {
-    document.title = 'Privacy Policy — Sprout'
-  }, [])
+  useSeo({
+    title: 'Privacy Policy — Sprout',
+    description:
+      "Sprout's privacy policy: what data our free calorie and health calculators collect, how AI meal analysis and account sync work, and your choices.",
+    path: '/privacy',
+  })
 
   return (
     <div className="container static-page">

@@ -34,7 +34,8 @@
 
 .footer__links {
   display: flex;
-  gap: 26px;
+  flex-wrap: wrap;
+  gap: 12px 26px;
 }
 
 .footer__links a {

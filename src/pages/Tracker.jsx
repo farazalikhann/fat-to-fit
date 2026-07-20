@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useSeo } from '../utils/seo'
 import DailyDiary from '../components/tracker/DailyDiary'
 import WeeklyChart from '../components/tracker/WeeklyChart'
 import ProfileCard from '../components/tracker/ProfileCard'
@@ -20,9 +21,12 @@ const DEFAULT_PROFILE = { dailyGoal: 2000, heightCm: null, weightKg: null }
 export default function Tracker() {
   const { user, authReady } = useAuth()
 
-  useEffect(() => {
-    document.title = 'My Tracker — Sprout'
-  }, [])
+  useSeo({
+    title: 'AI Calorie Tracker — Log & Track Daily Meals | Sprout',
+    description:
+      "Track your daily calories and macros with Sprout's AI meal tracker. Log meals by photo or text, see your 7-day history and monthly calendar, and stay on target - free, no credit card required.",
+    path: '/tracker',
+  })
 
   if (!authReady) {
     return (
@@ -178,7 +182,7 @@ function TrackerDashboard({ user }) {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <div className="tracker-chart-card__head">
-            <h3>Last 7 days</h3>
+            <h2>Last 7 days</h2>
             <TrackerPdfButton userName={user.displayName} chartDays={chartDays} />
           </div>
           <WeeklyChart days={chartDays} />

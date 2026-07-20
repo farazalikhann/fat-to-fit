@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useSeo } from '../utils/seo'
 import AuthGate from '../components/shared/AuthGate'
 import SharedStatsPanel from '../sections/SharedStatsPanel'
 import { Field, NumberInput } from '../components/shared/Inputs'
@@ -23,9 +24,12 @@ const DEFAULT_PROFILE = {
 export default function Settings() {
   const { authReady } = useAuth()
 
-  useEffect(() => {
-    document.title = 'Settings — Sprout'
-  }, [])
+  useSeo({
+    title: 'Account Settings — Sprout',
+    description:
+      'Manage your Sprout profile: display name, saved height, weight, age, activity level, and daily calorie goal.',
+    path: '/settings',
+  })
 
   if (!authReady) {
     return (
@@ -132,6 +136,8 @@ function SettingsDashboard() {
             src={user.photoURL}
             alt=""
             referrerPolicy="no-referrer"
+            width={56}
+            height={56}
           />
         ) : (
           <span className="settings-identity__avatar settings-identity__avatar--initial">
@@ -152,7 +158,7 @@ function SettingsDashboard() {
       >
         <div className="settings-goal__head">
           <span className="stats-panel__eyebrow">Daily target</span>
-          <h3>Daily calorie goal</h3>
+          <h2>Daily calorie goal</h2>
         </div>
         <div className="settings-goal__row">
           <Field label="Goal">
@@ -191,6 +197,7 @@ function SettingsDashboard() {
           id="settings-stats"
           eyebrow="Your stats"
           title="Saved to your account"
+          headingLevel="h2"
         />
       </motion.div>
 

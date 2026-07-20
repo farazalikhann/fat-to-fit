@@ -1,12 +1,15 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useSeo } from '../utils/seo'
 import Reveal from '../components/shared/Reveal'
 import './StaticPage.css'
 
 export default function About() {
-  useEffect(() => {
-    document.title = 'About Sprout — Free Calorie & Health Calculators'
-  }, [])
+  useSeo({
+    title: 'About Sprout — Free Calorie & Health Calculators',
+    description:
+      "Learn about Sprout's free calorie, BMI, TDEE, and macro calculators - built on published nutrition formulas, with no signup and no hidden fees.",
+    path: '/about',
+  })
 
   return (
     <div className="container static-page">

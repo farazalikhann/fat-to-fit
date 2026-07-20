@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import ProgressRing from '../shared/ProgressRing'
 import NumberCountUp from '../shared/NumberCountUp'
@@ -32,6 +33,7 @@ export default function ProfileCard({ user, profile, todayTotal, onSave }) {
     try {
       await onSave({
         dailyGoal: Number(goal) || 2000,
+        goalSource: 'manual',
         heightCm: ft || inch ? ftInToCm(ft, inch) : null,
         weightKg: weight !== '' ? lbsToKg(Number(weight)) : null,
       })
@@ -154,6 +156,11 @@ export default function ProfileCard({ user, profile, todayTotal, onSave }) {
               <NumberCountUp value={Math.round(todayTotal)} className="profile-card__ring-number" />
               <span className="profile-card__ring-label">/ {profile.dailyGoal} kcal</span>
             </ProgressRing>
+            {!profile.goalSource && (
+              <p className="profile-card__goal-hint">
+                <Link to="/">Calculate your personal goal on the home page</Link>
+              </p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

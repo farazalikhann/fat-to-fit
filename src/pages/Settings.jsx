@@ -14,6 +14,7 @@ import './Settings.css'
 // at the top level, consistent with every other lazy-loaded page.
 const DEFAULT_PROFILE = {
   dailyGoal: 2000,
+  goalSource: null,
   heightCm: null,
   weightKg: null,
   gender: null,
@@ -92,7 +93,7 @@ function SettingsDashboard() {
     setSaved(false)
     try {
       const { saveProfile } = await import('../firebase/profile')
-      await saveProfile(user.uid, { dailyGoal: Number(goalInput) || 2000 })
+      await saveProfile(user.uid, { dailyGoal: Number(goalInput) || 2000, goalSource: 'manual' })
       setGoalEditing(false)
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
@@ -185,6 +186,8 @@ function SettingsDashboard() {
         {saveError && <p className="settings-goal__error">{saveError}</p>}
         <p className="settings-goal__hint">
           Used for the progress ring on My Tracker (currently {profile.dailyGoal} kcal/day).
+          Saving a goal here overrides the number automatically calculated from your stats on
+          the home page.
         </p>
       </motion.div>
 

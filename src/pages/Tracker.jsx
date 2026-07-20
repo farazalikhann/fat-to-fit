@@ -16,7 +16,7 @@ import './Tracker.css'
 // Mirrors firebase/profile.js's DEFAULT_PROFILE - duplicated here (rather
 // than statically importing that module) so this file stays Firebase-free
 // at the top level, consistent with everything else in this lazy-loaded page.
-const DEFAULT_PROFILE = { dailyGoal: 2000, heightCm: null, weightKg: null }
+const DEFAULT_PROFILE = { dailyGoal: 2000, goalSource: null, heightCm: null, weightKg: null }
 
 export default function Tracker() {
   const { user, authReady } = useAuth()

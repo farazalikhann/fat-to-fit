@@ -3,6 +3,11 @@ import { db } from './db'
 
 export const DEFAULT_PROFILE = {
   dailyGoal: 2000,
+  // 'auto' = kept in sync with the home page's calculated TDEE; 'manual' =
+  // the user explicitly set a goal (Settings or the Tracker profile card),
+  // which then stops being overwritten by recalculation. null = neither has
+  // happened yet for this account.
+  goalSource: null,
   heightCm: null,
   weightKg: null,
   gender: null,

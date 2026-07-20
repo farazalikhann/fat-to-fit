@@ -1,13 +1,10 @@
 import { motion } from 'framer-motion'
 import HeroParticles from '../components/layout/HeroParticles'
 import { BlobOne, BlobTwo } from '../components/layout/OrganicBlob'
+import HeroCalculator from './HeroCalculator'
 import './Hero.css'
 
 export default function Hero() {
-  const scrollToTools = () => {
-    document.getElementById('tools')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   return (
     <section className="hero">
       <HeroParticles />
@@ -31,48 +28,18 @@ export default function Hero() {
             The Mifflin-St Jeor calorie calculator, TDEE, macros, BMI, ideal weight, water
             intake and body fat — one clean toolkit instead of six different tabs.
           </p>
-          <div className="hero__actions">
-            <button className="btn btn-primary" onClick={scrollToTools}>
-              Calculate my calories →
-            </button>
-            <a className="btn btn-ghost" href="#how-we-calculate">
-              How it works
-            </a>
-          </div>
-          <div className="hero__trust">
-            <div>
-              <strong>7</strong>
-              <span>tools</span>
-            </div>
-            <div>
-              <strong>0</strong>
-              <span>signup required</span>
-            </div>
-            <div>
-              <strong>100%</strong>
-              <span>free, always</span>
-            </div>
-          </div>
+          <a className="hero__how-link" href="#how-we-calculate">
+            See how we calculate it →
+          </a>
         </motion.div>
 
         <motion.div
-          className="hero__visual organic-3"
-          initial={{ opacity: 0, scale: 0.92 }}
+          className="hero__visual"
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="hero__visual-label">Estimated daily target</span>
-          <span className="hero__visual-number">2,150</span>
-          <span className="hero__visual-unit">kcal / day</span>
-          <div className="hero__visual-bar">
-            <motion.div
-              className="hero__visual-bar-fill"
-              initial={{ width: 0 }}
-              animate={{ width: '72%' }}
-              transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            />
-          </div>
-          <span className="hero__visual-caption">Based on Mifflin-St Jeor + moderate activity</span>
+          <HeroCalculator />
         </motion.div>
       </div>
     </section>

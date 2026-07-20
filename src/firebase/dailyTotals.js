@@ -14,6 +14,23 @@ function friendlyDailyTotalsError(action, error) {
 }
 
 /**
+ * Subscribes to a single day's persisted total (e.g. today's), for
+ * lightweight "X kcal so far today" displays that don't need the full
+ * entries list. `onData` receives a plain number (0 if no doc yet).
+ */
+export function subscribeToTodayTotal(uid, dateKey, onData, onError) {
+  return onSnapshot(
+    dailyTotalDoc(uid, dateKey),
+    (snap) => onData(snap.exists() ? snap.data().total || 0 : 0),
+    (error) => {
+      const wrapped = friendlyDailyTotalsError("load today's total", error)
+      if (onError) onError(wrapped)
+      else throw wrapped
+    },
+  )
+}
+
+/**
  * Subscribes to every day's persisted total within [startKey, endKey]
  * (inclusive, 'YYYY-MM-DD' strings). Unlike `entries`, these docs are never
  * auto-deleted, so a month view keeps working long after the underlying

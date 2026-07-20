@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from './AuthContext'
+import { calculateBMR, calculateTDEE } from '../utils/calculations'
 
 export const StatsContext = createContext(null)
 
@@ -60,8 +61,8 @@ export function StatsProvider({ children }) {
     let cancelled = false
 
     import('../firebase/profile')
-      .then(({ getProfile }) => getProfile(user.uid))
-      .then((profile) => {
+      .then(async ({ getProfile, saveProfile }) => {
+        const profile = await getProfile(user.uid)
         if (cancelled) return
         hydratedUidRef.current = user.uid
         const patch = {}
@@ -71,6 +72,19 @@ export function StatsProvider({ children }) {
         if (Object.keys(patch).length > 0) {
           skipNextSaveRef.current = true
           setStats((prev) => ({ ...prev, ...patch }))
+        }
+
+        // Reflect a calculated daily goal immediately on login (unless the
+        // user already chose one manually in Settings/My Tracker), so TDEE
+        // shows up on the tracker right away instead of waiting for the
+        // user to touch a calculator input first.
+        if (profile.goalSource !== 'manual') {
+          const merged = { ...stats, ...patch }
+          const bmr = calculateBMR(merged)
+          const tdee = calculateTDEE({ bmr, activityLevel: merged.activityLevel })
+          if (Number.isFinite(tdee) && tdee > 0) {
+            await saveProfile(user.uid, { dailyGoal: Math.round(tdee), goalSource: 'auto' })
+          }
         }
       })
       .catch((error) => console.error('[Stats] cloud profile load failed:', error.message))
@@ -97,7 +111,25 @@ export function StatsProvider({ children }) {
         data[key] = stats[key] === '' ? null : stats[key]
       })
       import('../firebase/profile')
-        .then(({ saveProfile }) => saveProfile(uid, data))
+        .then(async ({ saveProfile, getProfile }) => {
+          // Re-check goalSource fresh (rather than trusting a stale value
+          // from hydration) so a manual override made in another tab/page
+          // during this session is never silently clobbered here.
+          try {
+            const current = await getProfile(uid)
+            if (current.goalSource !== 'manual') {
+              const bmr = calculateBMR(stats)
+              const tdee = calculateTDEE({ bmr, activityLevel: stats.activityLevel })
+              if (Number.isFinite(tdee) && tdee > 0) {
+                data.dailyGoal = Math.round(tdee)
+                data.goalSource = 'auto'
+              }
+            }
+          } catch {
+            /* if the goal-source check fails, still save the synced stats below */
+          }
+          await saveProfile(uid, data)
+        })
         .catch((error) => console.error('[Stats] cloud profile save failed:', error.message))
     }, 800)
     return () => clearTimeout(timer)

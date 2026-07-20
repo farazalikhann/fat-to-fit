@@ -193,8 +193,12 @@ export default function ProfileCard({ user, profile, effectiveGoal, liveTdee, to
                 size={104}
                 strokeWidth={9}
                 color={isOver ? 'var(--coral)' : 'var(--lime-2)'}
+                glow
               >
-                <NumberCountUp value={Math.round(todayTotal)} className="profile-card__ring-number" />
+                <NumberCountUp
+                  value={Math.round(todayTotal)}
+                  className={`profile-card__ring-number ${isOver ? 'is-over' : ''}`}
+                />
                 <span className="profile-card__ring-label">/ {effectiveGoal} kcal</span>
               </ProgressRing>
             </motion.button>

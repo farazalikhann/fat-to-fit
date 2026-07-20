@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import './ProgressRing.css'
 
 export default function ProgressRing({
   size = 220,
@@ -6,6 +7,7 @@ export default function ProgressRing({
   progress = 0.7,
   color = 'var(--surface-deep)',
   trackColor = 'var(--card-deep)',
+  glow = false,
   children,
 }) {
   const radius = (size - strokeWidth) / 2
@@ -13,8 +15,16 @@ export default function ProgressRing({
   const clamped = Math.max(0, Math.min(1, progress))
 
   return (
-    <div style={{ position: 'relative', width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <div className="progress-ring" style={{ width: size, height: size }}>
+      {glow && (
+        <motion.div
+          className="progress-ring__glow"
+          style={{ background: color }}
+          animate={{ scale: [1, 1.12, 1], opacity: [0.25, 0.5, 0.25] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="progress-ring__svg">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -24,6 +34,7 @@ export default function ProgressRing({
           strokeWidth={strokeWidth}
         />
         <motion.circle
+          className="progress-ring__fill"
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -38,19 +49,7 @@ export default function ProgressRing({
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </svg>
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          textAlign: 'center',
-        }}
-      >
-        {children}
-      </div>
+      <div className="progress-ring__content">{children}</div>
     </div>
   )
 }

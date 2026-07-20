@@ -1,0 +1,32 @@
+.progress-ring {
+  position: relative;
+}
+
+.progress-ring__glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.progress-ring__svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.progress-ring__fill {
+  transition: stroke 0.5s ease-out;
+}
+
+.progress-ring__content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}

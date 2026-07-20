@@ -54,7 +54,11 @@ const UPSTREAM_TIMEOUT_MS = 18000
 // Only these origins may call this Worker - prevents other sites from
 // riding on your OpenRouter free-tier quota. Add your own dev/prod origins
 // here if you fork or redeploy this.
+// fatfit.club is the current custom domain; the old GitHub Pages project-page
+// URL is kept too since GitHub Pages keeps serving there alongside a custom
+// domain unless that's explicitly turned off.
 const ALLOWED_ORIGINS = [
+  'https://fatfit.club',
   'https://farazalikhann.github.io',
   'http://localhost:5173',
   'http://localhost:4173',
@@ -124,7 +128,7 @@ async function callOpenRouter(model, userContent, apiKey, signal) {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       // Recommended by OpenRouter for attribution/analytics - not secret.
-      'HTTP-Referer': 'https://farazalikhann.github.io/fat-to-fit/',
+      'HTTP-Referer': 'https://fatfit.club/',
       'X-Title': 'Sprout Meal Analyzer',
     },
     body: JSON.stringify({

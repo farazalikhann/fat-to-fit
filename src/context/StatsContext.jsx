@@ -74,18 +74,34 @@ export function StatsProvider({ children }) {
           setStats((prev) => ({ ...prev, ...patch }))
         }
 
-        // Reflect a calculated daily goal immediately on login (unless the
-        // user already chose one manually in Settings/My Tracker), so TDEE
-        // shows up on the tracker right away instead of waiting for the
-        // user to touch a calculator input first.
+        // Always push a merged snapshot back up on login - cloud values win
+        // when present (the `patch` above), otherwise whatever the user
+        // already had locally (e.g. entered as a guest before signing in).
+        // This is what makes a first-time sign-in persist immediately: if
+        // we only relied on the debounced save-on-change effect below, a
+        // user who signs in without touching another input afterward would
+        // never get their height/weight/gender/age/activity written to
+        // Firestore at all, since nothing in `stats` actually changed.
+        const merged = { ...stats, ...patch }
+        const toSave = {}
+        SYNCED_KEYS.forEach((key) => {
+          toSave[key] = merged[key] === '' ? null : merged[key]
+        })
+
+        // Reflect a calculated daily goal immediately on login too (unless
+        // the user already chose one manually in Settings/My Tracker), so
+        // TDEE shows up on the tracker right away instead of waiting for
+        // the user to touch a calculator input first.
         if (profile.goalSource !== 'manual') {
-          const merged = { ...stats, ...patch }
           const bmr = calculateBMR(merged)
           const tdee = calculateTDEE({ bmr, activityLevel: merged.activityLevel })
           if (Number.isFinite(tdee) && tdee > 0) {
-            await saveProfile(user.uid, { dailyGoal: Math.round(tdee), goalSource: 'auto' })
+            toSave.dailyGoal = Math.round(tdee)
+            toSave.goalSource = 'auto'
           }
         }
+
+        await saveProfile(user.uid, toSave)
       })
       .catch((error) => console.error('[Stats] cloud profile load failed:', error.message))
 

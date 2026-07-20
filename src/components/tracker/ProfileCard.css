@@ -69,6 +69,35 @@
   flex-shrink: 0;
 }
 
+.profile-card__ring-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: block;
+  transition: filter 0.2s var(--ease-out);
+}
+
+.profile-card__ring-btn:hover {
+  filter: brightness(1.05);
+}
+
+.profile-card__ring-btn:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 4px;
+}
+
+.profile-card__ring-caption {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sage);
+}
+
+.profile-card__ring-caption.is-over {
+  color: var(--coral);
+}
+
 .profile-card__goal-hint {
   font-size: 11.5px;
   max-width: 130px;
@@ -80,6 +109,40 @@
   color: var(--sage);
   font-weight: 600;
   text-decoration: underline;
+}
+
+.profile-card__goal-hint-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sage);
+  text-decoration: underline;
+  cursor: pointer;
+  max-width: 130px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.profile-card__goal-hint-btn:hover {
+  color: var(--forest);
+}
+
+.profile-card__reset-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sage);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.profile-card__reset-link:hover {
+  color: var(--forest);
 }
 
 .profile-card__ring-number {

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useStats } from '../context/StatsContext'
+import { calculateBMR, calculateTDEE } from '../utils/calculations'
 import { useSeo } from '../utils/seo'
 import DailyDiary from '../components/tracker/DailyDiary'
 import WeeklyChart from '../components/tracker/WeeklyChart'
@@ -87,9 +89,20 @@ function buildTrackerData(entries) {
 }
 
 function TrackerDashboard({ user }) {
+  const { stats } = useStats()
   const [entries, setEntries] = useState([])
   const [profile, setProfile] = useState(DEFAULT_PROFILE)
   const [error, setError] = useState('')
+
+  // The same live TDEE the home page calculator shows, from the same
+  // shared stats - this is what the tracker displays unless the user has
+  // explicitly chosen a different goal (goalSource: 'manual'), so the ring
+  // always matches the home page rather than depending on every stats
+  // change having already round-tripped through Firestore successfully.
+  const liveTdee = Math.round(
+    calculateTDEE({ bmr: calculateBMR(stats), activityLevel: stats.activityLevel }),
+  )
+  const effectiveGoal = profile.goalSource === 'manual' ? profile.dailyGoal : liveTdee
 
   useEffect(() => {
     let unsubscribe = () => {}
@@ -153,6 +166,11 @@ function TrackerDashboard({ user }) {
     await saveProfile(user.uid, data)
   }
 
+  const handleResetGoal = async () => {
+    const { saveProfile } = await import('../firebase/profile')
+    await saveProfile(user.uid, { dailyGoal: liveTdee, goalSource: 'auto' })
+  }
+
   return (
     <div className="container tracker-page">
       <div className="tracker-header">
@@ -162,7 +180,15 @@ function TrackerDashboard({ user }) {
 
       {error && <p className="tracker-page__error">{error}</p>}
 
-      <ProfileCard user={user} profile={profile} todayTotal={todayTotal} onSave={handleSaveProfile} />
+      <ProfileCard
+        user={user}
+        profile={profile}
+        effectiveGoal={effectiveGoal}
+        liveTdee={liveTdee}
+        todayTotal={todayTotal}
+        onSave={handleSaveProfile}
+        onResetGoal={handleResetGoal}
+      />
 
       <div className="tracker-grid">
         <div className="tracker-grid__main">
@@ -195,7 +221,7 @@ function TrackerDashboard({ user }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.15 }}
       >
-        <MonthlyCalendar uid={user.uid} dailyGoal={profile.dailyGoal} />
+        <MonthlyCalendar uid={user.uid} dailyGoal={effectiveGoal} />
       </motion.div>
     </div>
   )

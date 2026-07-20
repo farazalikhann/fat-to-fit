@@ -13,6 +13,7 @@ import {
 import { db } from './db'
 import { dailyTotalDoc } from './dailyTotals'
 import { getDateKey, startOfDaysAgo } from '../utils/dateKeys'
+import { trackEvent } from '../utils/analytics'
 
 // "Last 7 days" = today plus the preceding 6 days.
 const SEVEN_DAY_CUTOFF = () => startOfDaysAgo(6)
@@ -44,6 +45,7 @@ export async function addEntry(uid, data) {
     batch.set(entryRef, { ...data, createdAt: now.getTime(), dateKey })
     batch.set(dailyTotalDoc(uid, dateKey), { total: increment(data.calories || 0) }, { merge: true })
     await batch.commit()
+    trackEvent('save_meal', { calories: data.calories || 0, source: data.source || 'manual' })
     return entryRef.id
   } catch (error) {
     throw friendlyEntriesError('save that entry', error)

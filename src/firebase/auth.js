@@ -8,6 +8,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth'
 import { app } from './config'
+import { trackEvent } from '../utils/analytics'
 
 export const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider()
@@ -56,6 +57,7 @@ export async function signInWithEmail(email, password) {
 export async function signInWithGoogle() {
   try {
     const credential = await signInWithPopup(auth, googleProvider)
+    trackEvent('login', { method: 'google' })
     return credential.user
   } catch (error) {
     throw friendlyAuthError(error)

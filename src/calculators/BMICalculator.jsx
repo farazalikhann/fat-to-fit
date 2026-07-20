@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useStats } from '../context/StatsContext'
 import Gauge from '../components/shared/Gauge'
 import NumberCountUp from '../components/shared/NumberCountUp'
 import { calculateBMI, bmiCategory } from '../utils/calculations'
+import { trackEvent } from '../utils/analytics'
 import './BMICalculator.css'
 
 const ZONES = [
@@ -16,6 +18,17 @@ export default function BMICalculator() {
   const { stats } = useStats()
   const bmi = calculateBMI(stats.weightKg, stats.heightCm)
   const category = bmiCategory(bmi)
+
+  // Debounced so switching between height/weight inputs fires one event
+  // once the number settles, not one per keystroke.
+  useEffect(() => {
+    if (!Number.isFinite(bmi) || bmi <= 0) return
+    const timer = setTimeout(() => {
+      trackEvent('bmi_calculate', { value: Number(bmi.toFixed(1)), category: category.label })
+    }, 1200)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bmi])
 
   return (
     <motion.div

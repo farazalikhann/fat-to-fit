@@ -6,6 +6,7 @@ import NumberCountUp from '../components/shared/NumberCountUp'
 import { IconSparkle, IconCamera, IconClose } from '../components/shared/Icons'
 import { analyzeMeal, analyzeMealPhoto } from '../ai/mealAnalyzer'
 import { compressImage } from '../utils/imageCompress'
+import { trackEvent } from '../utils/analytics'
 import { useAuth } from '../context/AuthContext'
 import './MealAnalyzer.css'
 
@@ -54,6 +55,7 @@ export default function MealAnalyzer() {
     setError('')
     setSaveState('idle')
     setSaveError('')
+    trackEvent('ai_meal_analyze', { has_photo: !!photo, has_description: !!description.trim() })
     try {
       const data = photo
         ? await analyzeMealPhoto(photo.base64, photo.mimeType, description)

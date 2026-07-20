@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { generateTrackerReport } from '../../utils/pdfReport'
+import { trackEvent } from '../../utils/analytics'
 import { IconDownload } from '../shared/Icons'
 import '../shared/PdfDownloadButton.css'
 
@@ -14,6 +15,7 @@ export default function TrackerPdfButton({ userName, chartDays, className = '' }
     setTabNotice('')
     try {
       const result = await generateTrackerReport({ userName, chartDays })
+      trackEvent('pdf_download', { report_type: 'tracker' })
       if (result?.method === 'tab') setTabNotice(result.message || 'PDF opened in a new tab.')
     } finally {
       setBusy(false)

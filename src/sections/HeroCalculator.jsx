@@ -6,6 +6,7 @@ import NumberCountUp from '../components/shared/NumberCountUp'
 import { ACTIVITY_LEVELS, calculateBMR, calculateTDEE } from '../utils/calculations'
 import { cmToFtIn, ftInToCm, kgToLbs, lbsToKg, round } from '../utils/units'
 import { getDateKey } from '../utils/dateKeys'
+import { trackEvent } from '../utils/analytics'
 import { IconGoogle } from '../components/shared/Icons'
 import Spinner from '../components/shared/Spinner'
 import './HeroCalculator.css'
@@ -23,6 +24,20 @@ export default function HeroCalculator() {
 
   const bmr = calculateBMR(stats)
   const tdee = Math.round(calculateTDEE({ bmr, activityLevel: stats.activityLevel }))
+
+  // Debounced so a user scrubbing through inputs fires one event once the
+  // number settles, not one per keystroke.
+  useEffect(() => {
+    if (!Number.isFinite(tdee) || tdee <= 0) return
+    const timer = setTimeout(() => {
+      trackEvent('calculate_tdee', {
+        value: tdee,
+        gender: stats.gender,
+        activity_level: stats.activityLevel,
+      })
+    }, 1200)
+    return () => clearTimeout(timer)
+  }, [tdee, stats.gender, stats.activityLevel])
 
   useEffect(() => {
     if (!user) {

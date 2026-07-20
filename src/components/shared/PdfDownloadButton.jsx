@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useStats } from '../../context/StatsContext'
 import { generatePdfReport } from '../../utils/pdfReport'
+import { trackEvent } from '../../utils/analytics'
 import { IconDownload } from './Icons'
 import './PdfDownloadButton.css'
 
@@ -16,6 +17,7 @@ export default function PdfDownloadButton({ className = '' }) {
     setTabNotice('')
     try {
       const result = await generatePdfReport(stats)
+      trackEvent('pdf_download', { report_type: 'calculator' })
       if (result?.method === 'tab') setTabNotice(result.message || 'PDF opened in a new tab.')
     } finally {
       setBusy(false)

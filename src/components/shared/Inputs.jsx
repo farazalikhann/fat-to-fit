@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import './Inputs.css'
 
 export function Field({ label, children, hint, full = false }) {
@@ -10,16 +11,56 @@ export function Field({ label, children, hint, full = false }) {
   )
 }
 
-export function NumberInput({ value, onChange, suffix, min, max, step = 1, ...rest }) {
+const displayText = (value) => (value === '' || value === null || value === undefined ? '' : String(value))
+
+export function NumberInput({ value, onChange, suffix, min, max, step = 1, onFocus, onBlur, ...rest }) {
+  const [text, setText] = useState(displayText(value))
+  const [focused, setFocused] = useState(false)
+
+  // Follow external value changes (e.g. a unit toggle recalculating this
+  // same field) while the user isn't actively typing in it, without
+  // clobbering their in-progress keystrokes.
+  useEffect(() => {
+    if (!focused) setText(displayText(value))
+  }, [value, focused])
+
+  const handleFocus = (e) => {
+    setFocused(true)
+    // A field showing "0" is almost always an unset/default value - clear
+    // it so the user can type straight in instead of deleting the 0 first.
+    if (Number(value) === 0) setText('')
+    onFocus?.(e)
+  }
+
+  const handleBlur = (e) => {
+    setFocused(false)
+    if (text === '') {
+      setText('0')
+      onChange(0)
+    }
+    onBlur?.(e)
+  }
+
+  const handleChange = (e) => {
+    let raw = e.target.value
+    // Strip leading zeros as the user types ("06" -> "6"), but leave valid
+    // decimals like "0.5" alone.
+    if (/^0[0-9]/.test(raw)) raw = raw.replace(/^0+/, '')
+    setText(raw)
+    onChange(raw === '' ? '' : Number(raw))
+  }
+
   return (
     <div className="number-input">
       <input
         type="number"
-        value={value}
+        value={text}
         min={min}
         max={max}
         step={step}
-        onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onChange={handleChange}
         {...rest}
       />
       {suffix ? <span className="number-input__suffix">{suffix}</span> : null}

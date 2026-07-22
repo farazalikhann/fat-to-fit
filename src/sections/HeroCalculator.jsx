@@ -3,7 +3,17 @@ import { useStats } from '../context/StatsContext'
 import { useAuth } from '../context/AuthContext'
 import { Field, NumberInput, SegmentedToggle } from '../components/shared/Inputs'
 import NumberCountUp from '../components/shared/NumberCountUp'
-import { ACTIVITY_LEVELS, calculateBMR, calculateTDEE } from '../utils/calculations'
+import {
+  ACTIVITY_LEVELS,
+  calculateBMR,
+  calculateTDEE,
+  calculateBMI,
+  idealWeightRange,
+  waterIntakeLiters,
+  CALORIE_GOALS,
+  calorieGoalTarget,
+  calculateMacros,
+} from '../utils/calculations'
 import { cmToFtIn, ftInToCm, kgToLbs, lbsToKg, round } from '../utils/units'
 import { getDateKey } from '../utils/dateKeys'
 import { trackEvent } from '../utils/analytics'
@@ -24,6 +34,17 @@ export default function HeroCalculator() {
 
   const bmr = calculateBMR(stats)
   const tdee = Math.round(calculateTDEE({ bmr, activityLevel: stats.activityLevel }))
+
+  // Compact summary row (Change 2): BMI, ideal weight, water, macros - all
+  // derived from the same shared stats, no separate inputs.
+  const bmi = calculateBMI(stats.weightKg, stats.heightCm)
+  const idealRange = idealWeightRange(stats.heightCm, stats.gender)
+  const idealAvgKg = (idealRange.devine + idealRange.robinson + idealRange.hamwi) / 3
+  const idealDisplay = stats.weightUnit === 'kg' ? round(idealAvgKg, 1) : round(kgToLbs(idealAvgKg), 1)
+  const waterLiters = waterIntakeLiters(stats.weightKg, stats.activityLevel)
+  const goal = CALORIE_GOALS.find((g) => g.id === stats.selectedGoalId) ?? CALORIE_GOALS[3]
+  const goalCalories = calorieGoalTarget(tdee, goal.deltaLbPerWeek)
+  const macros = calculateMacros(goalCalories, stats.macroPreset)
 
   // Debounced so a user scrubbing through inputs fires one event once the
   // number settles, not one per keystroke.
@@ -73,7 +94,7 @@ export default function HeroCalculator() {
   const remaining = todayTotal !== null && Number.isFinite(tdee) ? Math.max(0, tdee - todayTotal) : null
 
   return (
-    <div className="hero-calc organic-3">
+    <div className="hero-calc organic-3" id="hero-calc">
       <div className="hero-calc__inputs">
         <div className="hero-calc__row">
           <Field label="Gender">
@@ -97,8 +118,16 @@ export default function HeroCalculator() {
           </Field>
         </div>
 
-        <div className="hero-calc__row">
-          <Field label="Height">
+        <Field label="Height" full>
+          <SegmentedToggle
+            options={[
+              { value: 'ft', label: 'ft / in' },
+              { value: 'cm', label: 'cm' },
+            ]}
+            value={stats.heightUnit}
+            onChange={(heightUnit) => patch({ heightUnit })}
+          />
+          {stats.heightUnit === 'ft' ? (
             <div className="hero-calc__pair">
               <NumberInput
                 value={ft}
@@ -115,17 +144,36 @@ export default function HeroCalculator() {
                 onChange={(v) => patch({ heightCm: ftInToCm(ft, v) })}
               />
             </div>
-          </Field>
-          <Field label="Weight">
+          ) : (
             <NumberInput
-              value={weightDisplay}
-              min={50}
-              max={500}
-              suffix="lbs"
-              onChange={(v) => patch({ weightKg: v === '' ? '' : lbsToKg(v) })}
+              value={round(stats.heightCm)}
+              min={100}
+              max={230}
+              suffix="cm"
+              onChange={(v) => patch({ heightCm: v === '' ? '' : v })}
             />
-          </Field>
-        </div>
+          )}
+        </Field>
+
+        <Field label="Weight" full>
+          <SegmentedToggle
+            options={[
+              { value: 'lbs', label: 'lbs' },
+              { value: 'kg', label: 'kg' },
+            ]}
+            value={stats.weightUnit}
+            onChange={(weightUnit) => patch({ weightUnit })}
+          />
+          <NumberInput
+            value={weightDisplay}
+            min={30}
+            max={500}
+            suffix={stats.weightUnit}
+            onChange={(v) =>
+              patch({ weightKg: v === '' ? '' : stats.weightUnit === 'kg' ? v : lbsToKg(v) })
+            }
+          />
+        </Field>
 
         <Field label="Activity level">
           <select
@@ -173,6 +221,24 @@ export default function HeroCalculator() {
         {authReady && user && (
           <p className="hero-calc__saved">✓ Your data is saved — view in My Tracker</p>
         )}
+      </div>
+
+      <div className="hero-calc__summary">
+        <span>
+          <strong>BMI</strong> {bmi.toFixed(1)}
+        </span>
+        <span className="hero-calc__summary-sep">•</span>
+        <span>
+          <strong>Ideal weight</strong> {idealDisplay} {stats.weightUnit}
+        </span>
+        <span className="hero-calc__summary-sep">•</span>
+        <span>
+          <strong>Water</strong> {waterLiters.toFixed(1)}L
+        </span>
+        <span className="hero-calc__summary-sep">•</span>
+        <span>
+          <strong>Macros</strong> P{macros.protein}g C{macros.carbs}g F{macros.fat}g
+        </span>
       </div>
     </div>
   )

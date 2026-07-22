@@ -13,6 +13,8 @@ export const DEFAULT_PROFILE = {
   gender: null,
   age: null,
   activityLevel: null,
+  heightUnit: null,
+  weightUnit: null,
 }
 
 function profileDoc(uid) {

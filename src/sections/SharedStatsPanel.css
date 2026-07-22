@@ -8,6 +8,12 @@
   border: 1px solid var(--line);
 }
 
+.stats-panel--bare {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
 .stats-panel__eyebrow {
   display: inline-block;
   font-size: 12.5px;

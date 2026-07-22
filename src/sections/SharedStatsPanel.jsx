@@ -9,6 +9,8 @@ export default function SharedStatsPanel({
   title = 'Enter once, use everywhere',
   id = 'shared-stats',
   headingLevel = 'h3',
+  showHeading = true,
+  bare = false,
 }) {
   const { stats, patch } = useStats()
   const { ft, inch } = cmToFtIn(stats.heightCm)
@@ -17,11 +19,13 @@ export default function SharedStatsPanel({
   const Heading = headingLevel
 
   return (
-    <div id={id} className="stats-panel organic-3">
-      <div className="stats-panel__head">
-        <span className="stats-panel__eyebrow">{eyebrow}</span>
-        <Heading className="stats-panel__title">{title}</Heading>
-      </div>
+    <div id={id} className={`stats-panel ${bare ? '' : 'organic-3'} ${bare ? 'stats-panel--bare' : ''}`}>
+      {showHeading && (
+        <div className="stats-panel__head">
+          <span className="stats-panel__eyebrow">{eyebrow}</span>
+          <Heading className="stats-panel__title">{title}</Heading>
+        </div>
+      )}
 
       <div className="stats-panel__grid">
         <Field label="Gender">

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useStats } from '../context/StatsContext'
 import { useSeo } from '../utils/seo'
 import AuthGate from '../components/shared/AuthGate'
+import Modal from '../components/shared/Modal'
 import SharedStatsPanel from '../sections/SharedStatsPanel'
 import { Field, NumberInput } from '../components/shared/Inputs'
 import { IconLogout } from '../components/shared/Icons'
 import Spinner from '../components/shared/Spinner'
+import { ACTIVITY_LEVELS, calculateBMR, calculateTDEE } from '../utils/calculations'
+import { cmToFtIn, kgToLbs, round } from '../utils/units'
 import './Settings.css'
 
 // Mirrors firebase/profile.js's DEFAULT_PROFILE - duplicated here (rather
@@ -55,7 +59,9 @@ export default function Settings() {
 
 function SettingsDashboard() {
   const { user, signOut } = useAuth()
+  const { stats } = useStats()
   const [profile, setProfile] = useState(DEFAULT_PROFILE)
+  const [editOpen, setEditOpen] = useState(false)
   const [goalInput, setGoalInput] = useState(DEFAULT_PROFILE.dailyGoal)
   const [goalEditing, setGoalEditing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -87,6 +93,12 @@ function SettingsDashboard() {
     }
   }, [user.uid])
 
+  const liveTdee = Math.round(
+    calculateTDEE({ bmr: calculateBMR(stats), activityLevel: stats.activityLevel }),
+  )
+  const isManual = profile.goalSource === 'manual'
+  const effectiveGoal = isManual ? profile.dailyGoal : liveTdee
+
   const handleGoalSave = async () => {
     setSaving(true)
     setSaveError('')
@@ -97,6 +109,20 @@ function SettingsDashboard() {
       setGoalEditing(false)
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      setSaveError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleResetGoal = async () => {
+    setSaving(true)
+    setSaveError('')
+    try {
+      const { saveProfile } = await import('../firebase/profile')
+      await saveProfile(user.uid, { dailyGoal: liveTdee, goalSource: 'auto' })
+      setGoalEditing(false)
     } catch (err) {
       setSaveError(err.message)
     } finally {
@@ -116,7 +142,13 @@ function SettingsDashboard() {
     }
   }
 
-  const goalChanged = Number(goalInput) !== profile.dailyGoal
+  const goalChanged = Number(goalInput) !== effectiveGoal
+
+  const { ft, inch } = cmToFtIn(stats.heightCm)
+  const heightDisplay = stats.heightUnit === 'cm' ? `${round(stats.heightCm)} cm` : `${ft}'${inch}"`
+  const weightDisplay =
+    stats.weightUnit === 'kg' ? `${round(stats.weightKg, 1)} kg` : `${round(kgToLbs(stats.weightKg), 1)} lbs`
+  const activityLabel = ACTIVITY_LEVELS.find((a) => a.id === stats.activityLevel)?.label ?? ''
 
   return (
     <div className="container settings-page">
@@ -152,57 +184,83 @@ function SettingsDashboard() {
       </motion.div>
 
       <motion.div
-        className="settings-goal organic-4"
+        className="settings-summary organic-4"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.05 }}
       >
-        <div className="settings-goal__head">
-          <span className="stats-panel__eyebrow">Daily target</span>
-          <h2>Daily calorie goal</h2>
+        <div className="settings-summary__head">
+          <span className="stats-panel__eyebrow">Your profile</span>
+          <h2>Saved stats &amp; goal</h2>
         </div>
-        <div className="settings-goal__row">
-          <Field label="Goal">
-            <NumberInput
-              value={goalInput}
-              onChange={(v) => {
-                setGoalEditing(true)
-                setGoalInput(v)
-              }}
-              suffix="kcal"
-              min={800}
-              max={6000}
-            />
-          </Field>
-          <button
-            type="button"
-            className="btn btn-primary settings-goal__save"
-            onClick={handleGoalSave}
-            disabled={saving || !goalChanged}
-          >
-            {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save'}
-          </button>
-        </div>
-        {saveError && <p className="settings-goal__error">{saveError}</p>}
-        <p className="settings-goal__hint">
-          Used for the progress ring on My Tracker (currently {profile.dailyGoal} kcal/day).
-          Saving a goal here overrides the number automatically calculated from your stats on
-          the home page.
+        <p className="settings-summary__line">
+          Gender: {stats.gender === 'female' ? 'Female' : 'Male'} · Age: {stats.age} · Height:{' '}
+          {heightDisplay} · Weight: {weightDisplay} · Activity: {activityLabel}
         </p>
+        <p className="settings-summary__goal">
+          Goal: {effectiveGoal.toLocaleString()} kcal/day
+          {isManual && <span className="settings-summary__manual-tag"> (manually set)</span>}
+        </p>
+        <button
+          type="button"
+          className="btn btn-primary settings-summary__edit-btn"
+          onClick={() => setEditOpen(true)}
+        >
+          Edit my stats
+        </button>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <SharedStatsPanel
-          id="settings-stats"
-          eyebrow="Your stats"
-          title="Saved to your account"
-          headingLevel="h2"
-        />
-      </motion.div>
+      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit your stats">
+        <SharedStatsPanel id="settings-modal-stats" showHeading={false} bare />
+
+        <div className="settings-modal-goal">
+          <div className="settings-modal-goal__head">
+            <span className="stats-panel__eyebrow">Daily target</span>
+            <h3>Daily calorie goal</h3>
+          </div>
+          <div className="settings-goal__row">
+            <Field label="Goal">
+              <NumberInput
+                value={goalInput}
+                onChange={(v) => {
+                  setGoalEditing(true)
+                  setGoalInput(v)
+                }}
+                suffix="kcal"
+                min={800}
+                max={6000}
+              />
+            </Field>
+            <button
+              type="button"
+              className="btn btn-primary settings-goal__save"
+              onClick={handleGoalSave}
+              disabled={saving || !goalChanged}
+            >
+              {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save'}
+            </button>
+          </div>
+          {isManual && (
+            <button
+              type="button"
+              className="settings-goal__reset"
+              onClick={handleResetGoal}
+              disabled={saving}
+            >
+              Use calculated goal instead ({liveTdee.toLocaleString()} kcal)
+            </button>
+          )}
+          {saveError && <p className="settings-goal__error">{saveError}</p>}
+          <p className="settings-goal__hint">
+            Used for the progress ring on My Tracker. Saving a goal here overrides the number
+            automatically calculated from your stats.
+          </p>
+        </div>
+
+        <button type="button" className="btn btn-ghost settings-modal-done" onClick={() => setEditOpen(false)}>
+          Done
+        </button>
+      </Modal>
 
       <motion.div
         className="settings-logout"

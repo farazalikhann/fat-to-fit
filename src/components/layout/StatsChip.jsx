@@ -9,7 +9,7 @@ export default function StatsChip() {
   const activityLabel = ACTIVITY_LEVELS.find((a) => a.id === stats.activityLevel)?.label
 
   const scrollToPanel = () => {
-    document.getElementById('shared-stats')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.getElementById('hero-calc')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (

@@ -22,10 +22,11 @@ const DEFAULT_STATS = {
 }
 
 // The subset of `stats` that's shared with a signed-in user's cloud profile
-// (users/{uid}/profile/main) so it auto-fills on their next visit/login.
-// Unit toggles and calculator-only preferences (goal/macro preset, body-fat
-// measurements) stay device-local only.
-const SYNCED_KEYS = ['gender', 'age', 'heightCm', 'weightKg', 'activityLevel']
+// (users/{uid}/profile/main) so it auto-fills on their next visit/login -
+// including their preferred ft/in-vs-cm and lbs-vs-kg unit toggles, so a
+// returning user sees the same units they left with. Calculator-only
+// preferences (goal/macro preset, body-fat measurements) stay device-local.
+const SYNCED_KEYS = ['gender', 'age', 'heightCm', 'weightKg', 'activityLevel', 'heightUnit', 'weightUnit']
 
 function loadInitial() {
   if (typeof window === 'undefined') return DEFAULT_STATS
@@ -149,7 +150,16 @@ export function StatsProvider({ children }) {
         .catch((error) => console.error('[Stats] cloud profile save failed:', error.message))
     }, 800)
     return () => clearTimeout(timer)
-  }, [user, stats.gender, stats.age, stats.heightCm, stats.weightKg, stats.activityLevel])
+  }, [
+    user,
+    stats.gender,
+    stats.age,
+    stats.heightCm,
+    stats.weightKg,
+    stats.activityLevel,
+    stats.heightUnit,
+    stats.weightUnit,
+  ])
 
   const patch = (fields) => setStats((prev) => ({ ...prev, ...fields }))
 

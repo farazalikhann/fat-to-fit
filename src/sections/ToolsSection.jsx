@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Tabs from '../components/shared/Tabs'
 import StatsChip from '../components/layout/StatsChip'
 import PdfDownloadButton from '../components/shared/PdfDownloadButton'
-import SharedStatsPanel from './SharedStatsPanel'
 import CalorieCalculator from '../calculators/CalorieCalculator'
 import MacroCalculator from '../calculators/MacroCalculator'
 import BMICalculator from '../calculators/BMICalculator'
@@ -52,10 +51,6 @@ export default function ToolsSection() {
         </div>
 
         <div className="tools__layout">
-          <div className="tools__panel">
-            <SharedStatsPanel />
-          </div>
-
           <div className="tools__content">
             <div className="tools__content-top">
               <Tabs tabs={TABS} active={active} onChange={setActive} />
